@@ -65,7 +65,8 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        world.step((float) Math.floor(delta / TIME_STEP), 6, 2);
+        // TODO: accumulator or something to do a physics step every 1/60th of a second, instead of every call of render
+        world.step(TIME_STEP, 6, 2);
         debugRenderer.render(world, camera.combined);
     }
 

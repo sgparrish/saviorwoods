@@ -1,7 +1,14 @@
 package com.sgparrish.woods.entity;
 
-public interface Component {
-    public void update(float delta);
+public abstract class Component {
 
-    public void render();
+    protected final Entity parent;
+
+    public Component(Entity parent) {
+        this.parent = parent;
+    }
+
+    public abstract void update(float delta);
+
+    public abstract void render();
 }

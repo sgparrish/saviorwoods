@@ -19,20 +19,22 @@ public abstract class Entity {
      * @param clazz the class or superclass to get the component for
      * @return the first component of type clazz (or a subclass of it)
      */
-    public Component get(Class clazz) {
+    @SuppressWarnings("unchecked")
+    public <T extends Component> T get(Class clazz) {
         for (Class thisClass : components.keySet()) {
             Class subClass = thisClass;
             while (thisClass != Component.class) {
                 if (clazz == thisClass) {
-                    return components.get(subClass);
-                } else {
+                    return (T) components.get(subClass);
+                }
+                else {
                     thisClass = thisClass.getSuperclass();
                 }
             }
         }
         return null;
     }
-    
+
     public void update(float delta) {
         for (Component component : components.values()) {
             component.update(delta);

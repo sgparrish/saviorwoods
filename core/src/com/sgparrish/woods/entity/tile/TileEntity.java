@@ -6,7 +6,7 @@ public class TileEntity extends Entity {
     public TileEntity() {
         super();
 
-        add(new TilePhysicsEntity(this));
+        add(new TilePhysicsComponent(this));
     }
 
 }

@@ -3,12 +3,11 @@ package com.sgparrish.woods.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.sgparrish.woods.entity.Entity;
+import com.sgparrish.woods.entity.brush.BrushEntity;
 import com.sgparrish.woods.entity.player.PlayerEntity;
-import com.sgparrish.woods.entity.tile.TileEntity;
+import com.sgparrish.woods.entity.tile.TileMapEntity;
 
 import java.util.ArrayList;
 
@@ -29,24 +28,22 @@ public class GameScreen implements Screen {
         debugRenderer = new Box2DDebugRenderer();
 
         entities = new ArrayList<Entity>();
-        entities.add(new PlayerEntity());
-        entities.add(new TileEntity());
+        Entity player = new PlayerEntity();
+        entities.add(player);
+        TileMapEntity tme = new TileMapEntity();
+        entities.add(tme);
 
+        tme.player = player;
+        tme.setBounds(0, 0, 1280, 720);
+        tme.addTile(7, 10);
+        tme.addTile(8, 10);
+        tme.addTile(9, 10);
+        tme.addTile(10, 10);
+        tme.addTile(9, 9);
+        tme.addTile(0, 9);
+        tme.addTile(9, 0);
 
-        // Create Ground
-        /*
-        BodyDef groundBodyDef = new BodyDef();
-        groundBodyDef.type = BodyDef.BodyType.StaticBody;
-        groundBodyDef.position.set(new Vector2(0, 10));
-        Body groundBody = physics.world.createBody(groundBodyDef);
-        PolygonShape groundBox = new PolygonShape();
-        groundBox.setAsBox(physics.camera.viewportWidth, 10.0f);
-        groundBody.createFixture(groundBox, 0.0f);
-
-        groundBox.dispose();
-*/
-
-
+        entities.add(new BrushEntity());
 
     }
 

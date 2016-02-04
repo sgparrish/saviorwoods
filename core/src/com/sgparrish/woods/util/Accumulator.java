@@ -1,4 +1,4 @@
-package com.sgparrish.woods.entity.util;
+package com.sgparrish.woods.util;
 
 public class Accumulator {
 

@@ -5,29 +5,30 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.sgparrish.woods.entity.Entity;
 import com.sgparrish.woods.entity.PhysicsComponent;
-import com.sgparrish.woods.entity.util.Accumulator;
+import com.sgparrish.woods.util.Accumulator;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class PhysicsManager {
 
-    private float TIME_STEP = 1 / 60f;
+    private static final float TIME_STEP = 1 / 60f;
 
     private static PhysicsManager ourInstance = new PhysicsManager();
-
     public static PhysicsManager getInstance() {
         return ourInstance;
     }
 
     public OrthographicCamera camera;
-
     public World world;
 
     private Accumulator accumulator;
+    private List<Runnable> postStepRunnables;
 
     private PhysicsManager() {
         Box2D.init();
     }
-
 
     public void start() {
         // Set up camera
@@ -35,9 +36,11 @@ public class PhysicsManager {
         camera.setToOrtho(false, 1280, 720);
 
         // Physics Initialization
-        world = new World(new Vector2(0, /*-6*/0), true);
+        world = new World(new Vector2(0, -60), true);
 
+        // Private members
         accumulator = new Accumulator(TIME_STEP);
+        postStepRunnables = new LinkedList<Runnable>();
 
         // Redirect all contact events to the physics components responsible for them
         world.setContactListener(new ContactListener() {
@@ -46,9 +49,9 @@ public class PhysicsManager {
                 Entity entityA = (Entity) contact.getFixtureA().getBody().getUserData();
                 Entity entityB = (Entity) contact.getFixtureB().getBody().getUserData();
                 PhysicsComponent componentA;
-                componentA = (PhysicsComponent) entityA.get(PhysicsComponent.class);
+                componentA = entityA.get(PhysicsComponent.class);
                 PhysicsComponent componentB;
-                componentB = (PhysicsComponent) entityB.get(PhysicsComponent.class);
+                componentB = entityB.get(PhysicsComponent.class);
                 if (componentA != null) {
                     componentA.beginContact(contact, entityB, true);
                 }
@@ -62,9 +65,9 @@ public class PhysicsManager {
                 Entity entityA = (Entity) contact.getFixtureA().getBody().getUserData();
                 Entity entityB = (Entity) contact.getFixtureB().getBody().getUserData();
                 PhysicsComponent componentA;
-                componentA = (PhysicsComponent) entityA.get(PhysicsComponent.class);
+                componentA = entityA.get(PhysicsComponent.class);
                 PhysicsComponent componentB;
-                componentB = (PhysicsComponent) entityB.get(PhysicsComponent.class);
+                componentB = entityB.get(PhysicsComponent.class);
                 if (componentA != null) {
                     componentA.endContact(contact, entityB, true);
                 }
@@ -97,6 +100,14 @@ public class PhysicsManager {
         accumulator.accumulate(delta);
         while (accumulator.next()) {
             world.step(TIME_STEP, 6, 2);
+            for (Runnable runnable : postStepRunnables) {
+                runnable.run();
+            }
+            postStepRunnables.clear();
         }
+    }
+
+    public void runOutsidePhysicsStep(Runnable runnable) {
+        postStepRunnables.add(runnable);
     }
 }

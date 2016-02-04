@@ -16,7 +16,7 @@ public class CommandComponent extends Component {
 
     @Override
     public void update(float delta) {
-        Body b = ((PhysicsComponent) parent.get(PhysicsComponent.class)).body;
+        Body b = parent.<PhysicsComponent>get(PhysicsComponent.class).body;
         if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
             b.applyLinearImpulse(new Vector2(-1000000 * delta, 0), b.getPosition(), true);
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {

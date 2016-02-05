@@ -45,10 +45,21 @@ public class TileMapEntity extends PhysicsSpriteEntity {
                 ((float) y) * PhysicsFactory.TILE_SIZE + PhysicsFactory.HALF_TILE_SIZE);
     }
 
+    public MapKey getTileMapCoords(Vector2 vector) {
+        return new MapKey(((int) ((vector.x - PhysicsFactory.HALF_TILE_SIZE) / PhysicsFactory.TILE_SIZE)),
+                ((int) ((vector.y - PhysicsFactory.HALF_TILE_SIZE) / PhysicsFactory.TILE_SIZE)));
+    }
+
     public void addTile(int x, int y) {
-        TileEntity tileEntity = new TileEntity();
+        TileEntity tileEntity = new FallingTileEntity();
         tileEntity.setTileMapEntity(this);
         tileEntity.getBody().setTransform(getWorldCoords(x, y), 0.0f);
+        keyToTileMap.put(new MapKey(x, y), tileEntity);
+    }
+
+    public void insertTile(TileEntity tileEntity, int x, int y) {
+        tileEntity.getBody().setTransform(getWorldCoords(x, y), 0.0f);
+        tileEntity.getBody().setActive(true);
         keyToTileMap.put(new MapKey(x, y), tileEntity);
     }
 
@@ -66,7 +77,7 @@ public class TileMapEntity extends PhysicsSpriteEntity {
     private void fall() {
         for (int y = 1; y <= 13; y++) {
             for (int x = 0; x <= 21; x++) {
-                TileEntity tileEntity = keyToTileMap.get(new MapKey(x, y));
+                FallingTileEntity tileEntity = (FallingTileEntity) keyToTileMap.get(new MapKey(x, y));
                 if (tileEntity != null) {
                     if (tileEntity.canFall() &&
                             keyToTileMap.get(new MapKey(x, y - 1)) == null) {

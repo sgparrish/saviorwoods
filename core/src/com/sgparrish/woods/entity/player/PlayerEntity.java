@@ -11,6 +11,8 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.sgparrish.woods.entity.Entity;
 import com.sgparrish.woods.entity.PhysicsFactory;
 import com.sgparrish.woods.entity.PhysicsSpriteEntity;
+import com.sgparrish.woods.entity.tile.FallingTileEntity;
+import com.sgparrish.woods.entity.tile.MapKey;
 import com.sgparrish.woods.entity.tile.TileEntity;
 import com.sgparrish.woods.entity.tile.TileMapEntity;
 
@@ -23,6 +25,7 @@ public class PlayerEntity extends PhysicsSpriteEntity {
     private boolean facingRight;
     private LinkedList<TileEntity> carriedTiles;
     private Fixture carriedFixture;
+    private boolean dirtyAKey;
 
     public PlayerEntity() {
         super();
@@ -44,6 +47,12 @@ public class PlayerEntity extends PhysicsSpriteEntity {
         tileEntity.getBody().setActive(false);
         tileMapEntity.removeTile(tileEntity);
         updateCarriedFixture();
+    }
+
+    private TileEntity removeBottomTile() {
+        TileEntity tileEntity = carriedTiles.poll();
+        updateCarriedFixture();
+        return tileEntity;
     }
 
     public void removeTile(TileEntity tileEntity) {
@@ -81,16 +90,45 @@ public class PlayerEntity extends PhysicsSpriteEntity {
             ray = getLeft().add(-PhysicsFactory.HALF_SENSOR_SIZE, 0.0f);
         }
 
+        final Fixture[] closestFixture = new Fixture[1];
         physics.world.rayCast(new RayCastCallback() {
             @Override
             public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                if (fixture.getBody().getUserData() instanceof TileEntity) {
-                    TileEntity tileEntity = (TileEntity) fixture.getBody().getUserData();
-                    addTile(tileEntity);
+                if (fixture.getBody().getUserData() instanceof FallingTileEntity) {
+                    closestFixture[0] = fixture;
                 }
-                return 0;
+                return fraction;
             }
         }, point, ray);
+
+        if (closestFixture[0] != null && closestFixture[0].getBody().getUserData() instanceof FallingTileEntity) {
+            FallingTileEntity tileEntity = (FallingTileEntity) closestFixture[0].getBody().getUserData();
+            addTile(tileEntity);
+        }
+    }
+
+    private void drop() {
+        Vector2 point, ray;
+        int adjust;
+        if (facingRight) {
+            point = getRight();
+            ray = getRight().add(PhysicsFactory.HALF_SENSOR_SIZE, 0.0f);
+            adjust = 1;
+        } else {
+            point = getLeft();
+            ray = getLeft().add(-PhysicsFactory.HALF_SENSOR_SIZE, 0.0f);
+            adjust = -1;
+        }
+
+        MapKey playerTile = tileMapEntity.getTileMapCoords(point);
+        MapKey newTileKey = tileMapEntity.getTileMapCoords(ray);
+
+        if (playerTile.equals(newTileKey)) {
+            newTileKey.x += adjust;
+        }
+
+        tileMapEntity.insertTile(removeBottomTile(), newTileKey.x, newTileKey.y);
+
     }
 
     @Override
@@ -125,8 +163,12 @@ public class PlayerEntity extends PhysicsSpriteEntity {
             body.applyLinearImpulse(new Vector2(0, -30 * delta), position, true);
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            lift();
+        if (Gdx.input.isKeyPressed(Input.Keys.A) && !dirtyAKey) {
+            dirtyAKey = true;
+            if (carriedTiles.size() == 0) lift();
+            else drop();
+        } else {
+            if (!Gdx.input.isKeyPressed(Input.Keys.A)) dirtyAKey = false;
         }
     }
 

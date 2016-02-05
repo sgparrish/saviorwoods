@@ -3,8 +3,7 @@ package com.sgparrish.woods.game;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.sgparrish.woods.entity.Entity;
-import com.sgparrish.woods.entity.PhysicsComponent;
+import com.sgparrish.woods.entity.PhysicsSpriteEntity;
 import com.sgparrish.woods.util.Accumulator;
 
 import java.util.LinkedList;
@@ -33,7 +32,7 @@ public class PhysicsManager {
     public void start() {
         // Set up camera
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 1280, 720);
+        camera.setToOrtho(false, 1280 / 64, 720 / 64);
 
         // Physics Initialization
         world = new World(new Vector2(0, -60), true);
@@ -46,33 +45,25 @@ public class PhysicsManager {
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
-                Entity entityA = (Entity) contact.getFixtureA().getBody().getUserData();
-                Entity entityB = (Entity) contact.getFixtureB().getBody().getUserData();
-                PhysicsComponent componentA;
-                componentA = entityA.get(PhysicsComponent.class);
-                PhysicsComponent componentB;
-                componentB = entityB.get(PhysicsComponent.class);
-                if (componentA != null) {
-                    componentA.beginContact(contact, entityB, true);
+                PhysicsSpriteEntity entityA = (PhysicsSpriteEntity) contact.getFixtureA().getBody().getUserData();
+                PhysicsSpriteEntity entityB = (PhysicsSpriteEntity) contact.getFixtureB().getBody().getUserData();
+                if (entityA != null) {
+                    entityA.beginContact(contact, entityB, true);
                 }
-                if (componentB != null) {
-                    componentB.beginContact(contact, entityA, false);
+                if (entityB != null) {
+                    entityB.beginContact(contact, entityA, false);
                 }
             }
 
             @Override
             public void endContact(Contact contact) {
-                Entity entityA = (Entity) contact.getFixtureA().getBody().getUserData();
-                Entity entityB = (Entity) contact.getFixtureB().getBody().getUserData();
-                PhysicsComponent componentA;
-                componentA = entityA.get(PhysicsComponent.class);
-                PhysicsComponent componentB;
-                componentB = entityB.get(PhysicsComponent.class);
-                if (componentA != null) {
-                    componentA.endContact(contact, entityB, true);
+                PhysicsSpriteEntity entityA = (PhysicsSpriteEntity) contact.getFixtureA().getBody().getUserData();
+                PhysicsSpriteEntity entityB = (PhysicsSpriteEntity) contact.getFixtureB().getBody().getUserData();
+                if (entityA != null) {
+                    entityA.endContact(contact, entityB, true);
                 }
-                if (componentB != null) {
-                    componentB.endContact(contact, entityA, false);
+                if (entityB != null) {
+                    entityB.endContact(contact, entityA, false);
                 }
             }
 

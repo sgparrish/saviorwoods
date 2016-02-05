@@ -28,12 +28,13 @@ public class GameScreen implements Screen {
         debugRenderer = new Box2DDebugRenderer();
 
         entities = new ArrayList<Entity>();
-        Entity player = new PlayerEntity();
+        PlayerEntity player = new PlayerEntity();
         entities.add(player);
         TileMapEntity tme = new TileMapEntity();
         entities.add(tme);
 
-        tme.player = player;
+        player.setTileMapEntity(tme);
+        tme.setPlayer(player);
         tme.setBounds(0, 0, 1280, 720);
         tme.addTile(7, 10);
         tme.addTile(8, 10);

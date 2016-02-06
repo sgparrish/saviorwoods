@@ -38,7 +38,6 @@ public class World {
             initialCollisionCheck(TIME_STEP);
             collisionIteration(TIME_STEP);
         }
-
     }
 
     public void addCollidable(Collidable collidable) {

@@ -43,11 +43,11 @@ public class Collidable {
 
     public void collision(Collidable other, CollisionPair.CollisionSide side, Contact contact) {
 
-        listener.collision(other, side, contact);
+        if (listener != null) listener.collision(other, side, contact);
 
         if (solid) {
             // Remove velocity component in direction that collision occurred
-            switch(side) {
+            switch (side) {
                 case LEFT:
                 case RIGHT:
                     velocity.x = -velocity.x * properties.getElasticity(other.properties);

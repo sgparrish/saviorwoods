@@ -23,12 +23,12 @@ public class MaterialProperties {
     }
 
     public float getFriction(MaterialProperties other) {
-        float otherWeight = (1 - selfWeight);
-        return friction * selfWeight + other.friction * otherWeight;
+        float otherWeight = (1.0f - selfWeight);
+        return 1.0f - (friction * selfWeight + other.friction * otherWeight);
     }
 
     public float getElasticity(MaterialProperties other) {
-        float otherWeight = (1 - selfWeight);
+        float otherWeight = (1.0f - selfWeight);
         return elasticity * selfWeight + other.elasticity * otherWeight;
     }
 }

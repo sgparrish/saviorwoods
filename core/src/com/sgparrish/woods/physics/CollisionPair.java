@@ -61,7 +61,7 @@ public class CollisionPair implements Comparable<CollisionPair> {
 
     private float getCollisionTime(float timeRemaining) {
         // This method does the actual minkowski collision check
-        float minT = -1;
+        float minT = 2;
         float t, x, y;
         float left = minkowskiShape.x;
         float right = minkowskiShape.x + minkowskiShape.width;

@@ -1,24 +1,44 @@
 package com.sgparrish.woods.physics;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.sgparrish.woods.util.Accumulator;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
 public class World {
+
+    private static final float TIME_STEP = 1f / 60f;
+
+    public DebugRenderer debugRenderer;
+    private Accumulator accumulator;
     private ArrayList<Collidable> collidables;
     private ArrayList<CollisionDatum> collisionData;
     private PriorityQueue<CollisionPair> collisionPairs;
 
+    public World() {
+        accumulator = new Accumulator(TIME_STEP);
+        collidables = new ArrayList<Collidable>();
+        collisionData = new ArrayList<CollisionDatum>();
+        collisionPairs = new PriorityQueue<CollisionPair>();
+    }
+
     public void step(float delta) {
 
-        collisionData.clear();
-        collisionPairs.clear();
+        accumulator.accumulate(delta);
 
-        generateCollisionData(delta);
+        while (accumulator.next()) {
 
-        initialCollisionCheck(delta);
+            collisionData.clear();
+            collisionPairs.clear();
 
-        collisionIteration(delta);
+            generateCollisionData(TIME_STEP);
+            initialCollisionCheck(TIME_STEP);
+            collisionIteration(TIME_STEP);
+        }
+
     }
 
     public void addCollidable(Collidable collidable) {
@@ -33,6 +53,7 @@ public class World {
         for (Collidable collidable : collidables) {
             if (collidable.active) collisionData.add(new CollisionDatum(collidable, delta));
         }
+        if (debugRenderer != null) debugRenderer.render(collisionData, collisionPairs);
     }
 
     private void initialCollisionCheck(float delta) {
@@ -40,8 +61,7 @@ public class World {
             for (int indexB = indexA + 1; indexB < collisionData.size(); indexB++) {
                 CollisionDatum datumA = collisionData.get(indexA);
                 CollisionDatum datumB = collisionData.get(indexB);
-
-                if (datumA.getAABB().overlaps(datumB.getAABB())) {
+                if (datumA.aabb.overlaps(datumB.aabb)) {
                     collisionPairs.offer(new CollisionPair(datumA, datumB, 1.0f, delta));
                 }
             }
@@ -52,10 +72,10 @@ public class World {
         float lastCollisionTime = 0.0f;
         while (!collisionPairs.isEmpty()) {
             CollisionPair collisionPair = collisionPairs.poll();
-            if (collisionPair.collisionTime < 0) continue;
+            if (collisionPair.collisionTime > 1.0f) continue;
             collisionResponse(collisionPair, lastCollisionTime, delta);
-            lastCollisionTime = collisionPair.collisionTime;
         }
+        applyVelocities(1.0f - lastCollisionTime, delta);
     }
 
     private void collisionResponse(CollisionPair collisionPair, float lastCollisionTime, float delta) {
@@ -116,7 +136,7 @@ public class World {
         // collision checks on construction
         for (int index = 0; index < collisionData.size(); index++) {
             CollisionDatum otherDatum = collisionData.get(index);
-            if (datum.getAABB().overlaps(otherDatum.getAABB())) {
+            if (datum.aabb.overlaps(otherDatum.aabb)) {
                 collisionPairs.offer(new CollisionPair(datum, otherDatum, timeRemaining, delta));
             }
         }
@@ -144,4 +164,5 @@ public class World {
             collisionPairs.offer(collisionPair);
         }
     }
+
 }

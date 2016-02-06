@@ -21,9 +21,17 @@ public class World {
         collisionIteration(delta);
     }
 
+    public void addCollidable(Collidable collidable) {
+        collidables.add(collidable);
+    }
+
+    public void removeCollidable(Collidable collidable) {
+        collidables.remove(collidable);
+    }
+
     private void generateCollisionData(float delta) {
         for (Collidable collidable : collidables) {
-            collisionData.add(new CollisionDatum(collidable, delta));
+            if (collidable.active) collisionData.add(new CollisionDatum(collidable, delta));
         }
     }
 
@@ -34,30 +42,27 @@ public class World {
                 CollisionDatum datumB = collisionData.get(indexB);
 
                 if (datumA.getAABB().overlaps(datumB.getAABB())) {
-                    collisionPairs.offer(new CollisionPair(datumA, datumB, delta));
+                    collisionPairs.offer(new CollisionPair(datumA, datumB, 1.0f, delta));
                 }
             }
         }
     }
 
     private void collisionIteration(float delta) {
+        float lastCollisionTime = 0.0f;
         while (!collisionPairs.isEmpty()) {
             CollisionPair collisionPair = collisionPairs.poll();
             if (collisionPair.collisionTime < 0) continue;
-            collisionResponse(collisionPair, delta);
+            collisionResponse(collisionPair, lastCollisionTime, delta);
+            lastCollisionTime = collisionPair.collisionTime;
         }
     }
 
-    private void collisionResponse(CollisionPair collisionPair, float delta) {
-        Contact contact = new Contact(collisionPair);
+    private void collisionResponse(CollisionPair collisionPair, float lastCollisionTime, float delta) {
+        Contact contact = new Contact(collisionPair, delta);
 
-        // Move both collidable objects to the collision location
-        collisionPair.datumA.collidable.applyVelocity(collisionPair.collisionTime, delta);
-        collisionPair.datumB.collidable.applyVelocity(collisionPair.collisionTime, delta);
-
-        // Reduce the tRemaining for each collidable object
-        collisionPair.datumA.tRemaining -= collisionPair.collisionTime;
-        collisionPair.datumB.tRemaining -= collisionPair.collisionTime;
+        // Simulate everything up to this collision time
+        applyVelocities(collisionPair.collisionTime - lastCollisionTime, delta);
 
         // Notify both collidable objects of the collision
         collisionPair.datumA.collidable.collision(collisionPair.datumB.collidable,
@@ -66,29 +71,37 @@ public class World {
                 collisionPair.side, contact);
 
         // Process new possible collisions from state changes (bounces, etc)
-        processNewCollisions(collisionPair, delta);
+        float timeRemaining = (1.0f - collisionPair.collisionTime);
+        processNewCollisions(collisionPair, timeRemaining, delta);
     }
 
-    private void processNewCollisions(CollisionPair collisionPair, float delta) {
+    public void applyVelocities(float timeToSimulate, float delta) {
+        // Simulate everything up to collisionTime
+        for (CollisionDatum datum : collisionData) {
+            datum.collidable.applyVelocity(timeToSimulate, delta);
+        }
+    }
+
+    private void processNewCollisions(CollisionPair collisionPair, float timeRemaining, float delta) {
         // Test if AABB must be regenerated
-        collisionPair.datumA.refreshAABB(delta);
-        collisionPair.datumB.refreshAABB(delta);
+        collisionPair.datumA.refreshAABB(timeRemaining, delta);
+        collisionPair.datumB.refreshAABB(timeRemaining, delta);
         // If AABBs must be regenerated
         if (collisionPair.datumA.regenPairs) {
             // Regenerate collision pairs for all pairs involving this datum
-            regenerateCollisionPairs(collisionPair.datumA, delta);
+            regenerateCollisionPairs(collisionPair.datumA, timeRemaining, delta);
         } else {
             // Rerun collision checks for all pairs involving this datum
-            rerunCollisionChecks(collisionPair.datumA, delta);
+            rerunCollisionChecks(collisionPair.datumA, timeRemaining, delta);
         }
         if (collisionPair.datumB.regenPairs) {
-            regenerateCollisionPairs(collisionPair.datumB, delta);
+            regenerateCollisionPairs(collisionPair.datumB, timeRemaining, delta);
         } else {
-            rerunCollisionChecks(collisionPair.datumB, delta);
+            rerunCollisionChecks(collisionPair.datumB, timeRemaining, delta);
         }
     }
 
-    private void regenerateCollisionPairs(CollisionDatum datum, float delta) {
+    private void regenerateCollisionPairs(CollisionDatum datum, float timeRemaining, float delta) {
         // First remove all pairs in priority queue involving this datum
         Iterator<CollisionPair> iterator = collisionPairs.iterator();
         while (iterator.hasNext()) {
@@ -104,12 +117,12 @@ public class World {
         for (int index = 0; index < collisionData.size(); index++) {
             CollisionDatum otherDatum = collisionData.get(index);
             if (datum.getAABB().overlaps(otherDatum.getAABB())) {
-                collisionPairs.offer(new CollisionPair(datum, otherDatum, delta));
+                collisionPairs.offer(new CollisionPair(datum, otherDatum, timeRemaining, delta));
             }
         }
     }
 
-    private void rerunCollisionChecks(CollisionDatum datum, float delta) {
+    private void rerunCollisionChecks(CollisionDatum datum, float timeRemaining, float delta) {
 
         ArrayList<CollisionPair> temporaryPairs = new ArrayList<CollisionPair>();
 
@@ -118,7 +131,7 @@ public class World {
         while (iterator.hasNext()) {
             CollisionPair collisionPair = iterator.next();
             if (collisionPair.datumA == datum || collisionPair.datumB == datum) {
-                collisionPair.runCollisionCheck(delta);
+                collisionPair.runCollisionCheck(timeRemaining, delta);
                 // Remove this, because changing the order won't occur unless an add event occurs
                 // It can't be added until this iteration is complete though
                 iterator.remove();

@@ -7,29 +7,27 @@ public class CollisionDatum {
     public Collidable collidable;
     private Rectangle aabb;
     public boolean regenPairs;
-    public float tRemaining;
 
     public CollisionDatum(Collidable collidable, float delta) {
         this.collidable = collidable;
         regenPairs = false;
-        tRemaining = 1.0f;
-        aabb = collidable.getBroadPhaseAABB(tRemaining, delta);
+        aabb = collidable.getBroadPhaseAABB(1.0f, delta);
     }
 
     public Rectangle getAABB() {
         return aabb;
     }
 
-    public void refreshAABB(float delta) {
-        Rectangle newAABB = collidable.getBroadPhaseAABB(tRemaining, delta);
+    public void refreshAABB(float timeRemaining, float delta) {
+        Rectangle newAABB = collidable.getBroadPhaseAABB(timeRemaining, delta);
         if (!aabb.contains(newAABB)) {
             aabb = newAABB;
             regenPairs = true;
         }
     }
 
-    public Vector2 getVelocity(float delta) {
-        return new Vector2(collidable.velocity.x * tRemaining * delta,
-                collidable.velocity.y * tRemaining * delta);
+    public Vector2 getVelocity(float timeRemaining, float delta) {
+        return new Vector2(collidable.velocity.x * timeRemaining * delta,
+                collidable.velocity.y * timeRemaining * delta);
     }
 }

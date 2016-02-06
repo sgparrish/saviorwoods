@@ -12,9 +12,9 @@ public class Contact {
     public final Vector2 pointB;
     public final float time;
 
-    public Contact (CollisionPair collisionPair) {
-        Rectangle rectangleA = collisionPair.datumA.collidable.getFutureRectangle(collisionPair.collisionTime);
-        Rectangle rectangleB = collisionPair.datumB.collidable.getFutureRectangle(collisionPair.collisionTime);
+    public Contact (CollisionPair collisionPair, float delta) {
+        Rectangle rectangleA = collisionPair.datumA.collidable.getFutureRectangle(collisionPair.collisionTime, delta);
+        Rectangle rectangleB = collisionPair.datumB.collidable.getFutureRectangle(collisionPair.collisionTime, delta);
 
         pointA = new Vector2();
         pointB = new Vector2();

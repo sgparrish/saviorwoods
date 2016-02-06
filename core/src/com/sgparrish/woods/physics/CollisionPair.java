@@ -4,69 +4,113 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class CollisionPair implements Comparable<CollisionPair> {
+
+    public enum CollisionSide {
+        LEFT,
+        RIGHT,
+        TOP,
+        BOTTOM;
+
+        public CollisionSide getOpposite() {
+            if (this == LEFT) {
+                return RIGHT;
+            } else if (this == RIGHT) {
+                return LEFT;
+            } else if (this == TOP) {
+                return BOTTOM;
+            } else if (this == BOTTOM) {
+                return TOP;
+            }
+            return null;
+        }
+    }
+
     public CollisionDatum datumA;
     public CollisionDatum datumB;
     public Rectangle minkowskiShape;
     public Vector2 minkowskiVelocity;
-    public float intersectionT;
+    public CollisionSide side;
+    public float collisionTime;
 
-    public CollisionPair(CollisionDatum datumA, CollisionDatum datumB) {
+    public CollisionPair(CollisionDatum datumA, CollisionDatum datumB, float delta) {
         this.datumA = datumA;
         this.datumB = datumB;
 
-        runCollisionCheck();
+        runCollisionCheck(delta);
     }
 
-    public void runCollisionCheck() {
+    public void runCollisionCheck(float delta) {
         minkowskiShape = generateMinkowskiShape();
-        minkowskiVelocity = generateMinkowskiVelocity();
-        intersectionT = getIntersectionTime();
+        minkowskiVelocity = generateMinkowskiVelocity(delta);
+        collisionTime = getCollisionTime();
     }
 
     private Rectangle generateMinkowskiShape() {
         Rectangle shape = new Rectangle();
-        Vector2 position = datumB.collidable.position.sub(datumA.collidable.position);
-        Vector2 dimension = datumA.collidable.dimension.add(datumB.collidable.dimension);
+        Vector2 position = new Vector2(datumB.collidable.position).sub(datumA.collidable.position);
+        position.sub(datumA.collidable.dimension);
+        Vector2 dimension = new Vector2(datumA.collidable.dimension).add(datumB.collidable.dimension);
         shape.setPosition(position);
         shape.setSize(dimension.x, dimension.y);
         return shape;
     }
 
-    private Vector2 generateMinkowskiVelocity() {
-        return datumA.collidable.velocity.add(datumB.collidable.velocity);
+    private Vector2 generateMinkowskiVelocity(float delta) {
+        return new Vector2(datumA.getVelocity(delta)).sub(datumB.getVelocity(delta));
     }
 
-    private float getIntersectionTime() {
+    private float getCollisionTime() {
+        // This method does the actual minkowski collision check
         float minT = -1;
-        float t;
+        float t, x, y;
+        float left = minkowskiShape.x;
+        float right = minkowskiShape.x + minkowskiShape.width;
+        float top = minkowskiShape.y + minkowskiShape.height;
+        float bottom = minkowskiShape.y;
         // Test against left edge
-        t = minkowskiShape.x / minkowskiVelocity.x;
-        if (t >= 0 && t <= 1) {
-            minT = Math.min(minT, t);
+        t = left / minkowskiVelocity.x; // Get the collisionTime that velocity would reach the left edge
+        if (t >= 0 && t <= 1) { // if that collisionTime within [0, 1] (aka during this collisionTime step)
+            y = t * minkowskiVelocity.y; // calculate the y value for that collisionTime
+            if (y >= bottom && y <= top && t < minT) { // if that y value is on the edge, and this is the smallest t yet
+                minT = t;
+                side = CollisionSide.LEFT;
+            }
         }
         // Test against right edge
-        t = (minkowskiShape.x + minkowskiShape.width) / minkowskiVelocity.x;
-        if (t >= 0 && t <= 1) {
-            minT = Math.min(minT, t);
+        t = right / minkowskiVelocity.x; // Get the collisionTime that velocity would reach the right edge
+        if (t >= 0 && t <= 1) { // if that collisionTime within [0, 1] (aka during this collisionTime step)
+            y = t * minkowskiVelocity.y; // calculate the y value for that collisionTime
+            if (y >= bottom && y <= top && t < minT) { // if that y value is on the edge, and this is the smallest t yet
+                minT = t;
+                side = CollisionSide.RIGHT;
+            }
         }
         // Test against top edge
-        t = minkowskiShape.y / minkowskiVelocity.y;
-        if (t >= 0 && t <= 1) {
-            minT = Math.min(minT, t);
+        t = top / minkowskiVelocity.y; // Get the collisionTime that velocity would reach the top edge
+        if (t >= 0 && t <= 1) { // if that collisionTime within [0, 1] (aka during this collisionTime step)
+            x = t * minkowskiVelocity.x; // calculate the x value for that collisionTime
+            if (x >= left && x <= right && t < minT) { // if that x value is on the edge, and this is the smallest t yet
+                minT = t;
+                side = CollisionSide.TOP;
+            }
         }
         // Test against bottom edge
-        t = (minkowskiShape.y + minkowskiShape.height) / minkowskiVelocity.y;
-        if (t >= 0 && t <= 1) {
-            minT = Math.min(minT, t);
+        t = bottom / minkowskiVelocity.y; // Get the collisionTime that velocity would reach the bottom edge
+        if (t >= 0 && t <= 1) { // if that collisionTime within [0, 1] (aka during this collisionTime step)
+            x = t * minkowskiVelocity.x; // calculate the x value for that collisionTime
+            if (x >= left && x <= right && t < minT) { // if that x value is on the edge, and this is the smallest t yet
+                minT = t;
+                side = CollisionSide.BOTTOM;
+            }
         }
         return minT;
     }
 
     @Override
     public int compareTo(CollisionPair o) {
-        if (intersectionT < o.intersectionT) {
+        if (collisionTime < o.collisionTime) {
             return -1;
-        } else if (intersectionT > o.intersectionT) {
+        } else if (collisionTime > o.collisionTime) {
             return 1;
         } else {
             return 0;

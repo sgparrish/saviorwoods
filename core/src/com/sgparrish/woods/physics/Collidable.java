@@ -6,12 +6,17 @@ import com.badlogic.gdx.math.Vector2;
 public class Collidable {
 
     public Collidable() {
+        this(null);
+    }
+
+    public Collidable(CollisionListener listener) {
         active = true;
         solid = true;
         position = new Vector2();
         velocity = new Vector2();
         dimension = new Vector2();
         properties = new MaterialProperties();
+        this.listener = listener;
     }
 
     public boolean active;
@@ -23,7 +28,9 @@ public class Collidable {
     public CollisionListener listener;
 
     public void applyVelocity(float t, float delta) {
-        position.add(velocity.x * t * delta, velocity.y * t * delta);
+        if (velocity.x != 0.0f || velocity.y != 0.0f) {
+            position.add(velocity.x * t * delta, velocity.y * t * delta);
+        }
     }
 
     public Rectangle getRectangle() {
@@ -41,24 +48,24 @@ public class Collidable {
         return rectangle.merge(velRect);
     }
 
-    public void collision(Collidable other, CollisionPair.CollisionSide side, Contact contact) {
+    public void collision(Collidable other, Vector2 normal, Contact contact) {
 
-        if (listener != null) listener.collision(other, side, contact);
+        if (listener != null) listener.collision(other, normal, contact);
 
         if (solid) {
             // Remove velocity component in direction that collision occurred
-            switch (side) {
-                case LEFT:
-                case RIGHT:
-                    velocity.x = -velocity.x * properties.getElasticity(other.properties);
-                    velocity.y = velocity.y * properties.getFriction(other.properties);
-                    break;
-                case TOP:
-                case BOTTOM:
-                    velocity.x = velocity.x * properties.getFriction(other.properties);
-                    velocity.y = -velocity.y * properties.getElasticity(other.properties);
-                    break;
-            }
+
+            Vector2 orthogonalToNormal = new Vector2(normal).rotate90(1);
+
+            float normalComponent = Math.abs(velocity.dot(normal));
+            float orthoComponent = velocity.dot(orthogonalToNormal);
+
+            normalComponent *= properties.getElasticity(other.properties);
+            orthoComponent *= properties.getFriction(other.properties);
+            velocity.set(
+                    normal.x * normalComponent + orthogonalToNormal.x * orthoComponent,
+                    normal.y * normalComponent + orthogonalToNormal.y * orthoComponent
+            );
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.sgparrish.woods.physics;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.sgparrish.woods.util.Accumulator;
 
 import java.util.ArrayList;
@@ -71,10 +70,14 @@ public class World {
         float lastCollisionTime = 0.0f;
         while (!collisionPairs.isEmpty()) {
             CollisionPair collisionPair = collisionPairs.poll();
-            if (collisionPair.collisionTime > 1.0f) continue;
-            collisionResponse(collisionPair, lastCollisionTime, delta);
+            if (collisionPair.collisionTime != 2.0f) {
+                collisionResponse(collisionPair, lastCollisionTime, delta);
+                lastCollisionTime = collisionPair.collisionTime;
+                if (debugRenderer != null) debugRenderer.render(collisionData, collisionPairs);
+            }
         }
         applyVelocities(1.0f - lastCollisionTime, delta);
+
     }
 
     private void collisionResponse(CollisionPair collisionPair, float lastCollisionTime, float delta) {
@@ -85,9 +88,12 @@ public class World {
 
         // Notify both collidable objects of the collision
         collisionPair.datumA.collidable.collision(collisionPair.datumB.collidable,
-                collisionPair.side.getOpposite(), contact);
+                new Vector2(collisionPair.normal).scl(-1), contact);
         collisionPair.datumB.collidable.collision(collisionPair.datumA.collidable,
-                collisionPair.side, contact);
+                new Vector2(collisionPair.normal), contact);
+
+        // Render this contact...
+        if (debugRenderer != null) debugRenderer.renderContact(contact);
 
         // Process new possible collisions from state changes (bounces, etc)
         float timeRemaining = (1.0f - collisionPair.collisionTime);
@@ -106,6 +112,7 @@ public class World {
         collisionPair.datumA.refreshAABB(timeRemaining, delta);
         collisionPair.datumB.refreshAABB(timeRemaining, delta);
         // If AABBs must be regenerated
+
         if (collisionPair.datumA.regenPairs) {
             // Regenerate collision pairs for all pairs involving this datum
             regenerateCollisionPairs(collisionPair.datumA, timeRemaining, delta);
@@ -135,8 +142,10 @@ public class World {
         // collision checks on construction
         for (int index = 0; index < collisionData.size(); index++) {
             CollisionDatum otherDatum = collisionData.get(index);
-            if (datum.aabb.overlaps(otherDatum.aabb)) {
-                collisionPairs.offer(new CollisionPair(datum, otherDatum, timeRemaining, delta));
+            if (datum != otherDatum) {
+                if (datum.aabb.overlaps(otherDatum.aabb)) {
+                    collisionPairs.offer(new CollisionPair(datum, otherDatum, timeRemaining, delta));
+                }
             }
         }
     }

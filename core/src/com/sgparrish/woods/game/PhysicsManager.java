@@ -48,10 +48,10 @@ public class PhysicsManager {
                 PhysicsSpriteEntity entityA = (PhysicsSpriteEntity) contact.getFixtureA().getBody().getUserData();
                 PhysicsSpriteEntity entityB = (PhysicsSpriteEntity) contact.getFixtureB().getBody().getUserData();
                 if (entityA != null) {
-                    entityA.beginContact(contact, entityB, true);
+                    //entityA.beginContact(contact, entityB, true);
                 }
                 if (entityB != null) {
-                    entityB.beginContact(contact, entityA, false);
+                    //entityB.beginContact(contact, entityA, false);
                 }
             }
 
@@ -60,10 +60,10 @@ public class PhysicsManager {
                 PhysicsSpriteEntity entityA = (PhysicsSpriteEntity) contact.getFixtureA().getBody().getUserData();
                 PhysicsSpriteEntity entityB = (PhysicsSpriteEntity) contact.getFixtureB().getBody().getUserData();
                 if (entityA != null) {
-                    entityA.endContact(contact, entityB, true);
+                    //entityA.endContact(contact, entityB, true);
                 }
                 if (entityB != null) {
-                    entityB.endContact(contact, entityA, false);
+                    //entityB.endContact(contact, entityA, false);
                 }
             }
 

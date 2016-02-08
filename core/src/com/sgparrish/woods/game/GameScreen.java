@@ -3,13 +3,9 @@ package com.sgparrish.woods.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.sgparrish.woods.entity.Entity;
-import com.sgparrish.woods.entity.brush.BrushEntity;
 import com.sgparrish.woods.entity.player.PlayerEntity;
-import com.sgparrish.woods.entity.tile.TileMapEntity;
 
 import java.util.ArrayList;
 
@@ -32,21 +28,6 @@ public class GameScreen implements Screen {
         entities = new ArrayList<Entity>();
         PlayerEntity player = new PlayerEntity();
         entities.add(player);
-        TileMapEntity tme = new TileMapEntity();
-        entities.add(tme);
-
-        player.setTileMapEntity(tme);
-        tme.setPlayer(player);
-        tme.setBounds(0, 0, 1280, 720);
-        tme.addTile(7, 10);
-        tme.addTile(8, 10);
-        tme.addTile(9, 10);
-        tme.addTile(10, 10);
-        tme.addTile(9, 9);
-        tme.addTile(0, 9);
-        tme.addTile(9, 0);
-
-        entities.add(new BrushEntity());
 
     }
 

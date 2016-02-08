@@ -16,7 +16,7 @@ public class CollisionDatum {
 
     public void refreshAABB(float timeRemaining, float delta) {
         Rectangle newAABB = collidable.getBroadPhaseAABB(timeRemaining, delta);
-        if (!aabb.contains(newAABB)) {
+        if (!aabb.contains(newAABB) && !aabb.equals(newAABB)) {
             aabb = newAABB;
             regenPairs = true;
         }

@@ -1,6 +1,7 @@
 package com.sgparrish.woods.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -35,10 +36,12 @@ public class DebugRenderer {
         shapeRenderer.setProjectionMatrix(camera.combined);
         for (CollisionDatum datum : collisionData) {
             renderDatum(datum);
+            if (datum.collidable.listener != null) {
+                //System.out.println(datum.collidable.position + ", " + datum.collidable.velocity);}
+            }
         }
-
         for (CollisionPair collisionPair : collisionPairs) {
-            System.out.println(collisionPair.collisionTime);
+            renderMinkowski(collisionPair);
         }
     }
 
@@ -110,6 +113,31 @@ public class DebugRenderer {
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.line(4.9f, 4.9f, 5.1f, 5.1f, Color.CYAN, Color.CYAN);
+        shapeRenderer.end();
+    }
+
+    public void renderMinkowski(CollisionPair pair) {
+        Vector2 center = new Vector2(10, 5);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.rect(
+                center.x + pair.minkowskiShape.x,
+                center.y + pair.minkowskiShape.y,
+                pair.minkowskiShape.width,
+                pair.minkowskiShape.height,
+                COLLIDABLE_COLOR,
+                COLLIDABLE_COLOR,
+                COLLIDABLE_COLOR,
+                COLLIDABLE_COLOR);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.line(
+                center.x,
+                center.y,
+                center.x + pair.minkowskiVelocity.x,
+                center.y + pair.minkowskiVelocity.y,
+                VELOCITY_COLOR,
+                VELOCITY_COLOR
+        );
         shapeRenderer.end();
     }
 }

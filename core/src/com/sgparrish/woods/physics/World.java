@@ -64,13 +64,14 @@ public class World {
                 }
             }
         }
+
     }
 
     private void collisionIteration(float delta) {
         float lastCollisionTime = 0.0f;
         while (!collisionPairs.isEmpty()) {
             CollisionPair collisionPair = collisionPairs.poll();
-            if (collisionPair.collisionTime != 2.0f) {
+            if (collisionPair.collisionTime != Float.MAX_VALUE) {
                 collisionResponse(collisionPair, lastCollisionTime, delta);
                 lastCollisionTime = collisionPair.collisionTime;
                 if (debugRenderer != null) debugRenderer.render(collisionData, collisionPairs);
@@ -81,6 +82,7 @@ public class World {
     }
 
     private void collisionResponse(CollisionPair collisionPair, float lastCollisionTime, float delta) {
+
         Contact contact = new Contact(collisionPair, delta);
 
         // Simulate everything up to this collision time
@@ -140,8 +142,7 @@ public class World {
         // Now iterate all other collidable objects, and generate necessary pairs
         // This functionally also reruns collision checks, as collision pairs run
         // collision checks on construction
-        for (int index = 0; index < collisionData.size(); index++) {
-            CollisionDatum otherDatum = collisionData.get(index);
+        for (CollisionDatum otherDatum : collisionData) {
             if (datum != otherDatum) {
                 if (datum.aabb.overlaps(otherDatum.aabb)) {
                     collisionPairs.offer(new CollisionPair(datum, otherDatum, timeRemaining, delta));

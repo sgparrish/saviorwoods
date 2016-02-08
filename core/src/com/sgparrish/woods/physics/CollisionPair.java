@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class CollisionPair implements Comparable<CollisionPair> {
 
-    public static final float GAMMA = 0.000001f;
+    public static final float GAMMA = 0.00001f;
     public static final float ZERO = 0.0f - GAMMA;
 
     public CollisionDatum datumA;
@@ -45,11 +45,13 @@ public class CollisionPair implements Comparable<CollisionPair> {
     }
 
     private float getCollisionTime(float timeRemaining) {
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            System.out.println("asdf");
+
+        if (minkowskiShape.contains(0, 0)) {
+            System.out.println("ruh roh!");
         }
+
         // This method does the actual minkowski collision check
-        float minT = 2;
+        float minT = Float.MAX_VALUE;
         float t, x, y;
         float left = minkowskiShape.x;
         float right = minkowskiShape.x + minkowskiShape.width;

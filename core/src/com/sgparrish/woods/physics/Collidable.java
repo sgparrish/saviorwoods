@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Collidable {
 
+    public static int collisions = 0;
+
     public Collidable() {
         this(null);
     }
@@ -50,9 +52,13 @@ public class Collidable {
 
     public void collision(Collidable other, Vector2 normal, Contact contact) {
 
-        if (listener != null) listener.collision(other, normal, contact);
+        if (listener != null) {
+            listener.collision(other, normal, contact);
+            collisions += 1;
+            //System.out.println("collision " + collisions);
+        }
 
-        if (solid) {
+        if (solid && other.solid) {
             // Remove velocity component in direction that collision occurred
 
             Vector2 orthogonalToNormal = new Vector2(normal).rotate90(1);
@@ -62,6 +68,7 @@ public class Collidable {
 
             normalComponent *= properties.getElasticity(other.properties);
             orthoComponent *= properties.getFriction(other.properties);
+
             velocity.set(
                     normal.x * normalComponent + orthogonalToNormal.x * orthoComponent,
                     normal.y * normalComponent + orthogonalToNormal.y * orthoComponent

@@ -30,12 +30,8 @@ public class Collidable {
     public CollisionListener listener;
 
     public void applyVelocity(float t, float delta) {
-        float xReduction = Math.min(0.001f, Math.abs(velocity.x) * delta * t * 0.01f);
-        float yReduction = Math.min(0.001f, Math.abs(velocity.y) * delta * t * 0.01f);
-        xReduction = (velocity.x > 0 ? -xReduction : xReduction);
-        yReduction = (velocity.y > 0 ? -yReduction : yReduction);
         if (velocity.x != 0.0f || velocity.y != 0.0f) {
-            position.add((velocity.x * t * delta) + xReduction, (velocity.y * t * delta) + yReduction);
+            position.add(velocity.x * t * delta, velocity.y * t * delta);
         }
     }
 
@@ -64,7 +60,6 @@ public class Collidable {
 
         if (solid && other.solid) {
             // Remove velocity component in direction that collision occurred
-
             Vector2 orthogonalToNormal = new Vector2(normal).rotate90(1);
 
             float normalComponent = Math.abs(velocity.dot(normal));

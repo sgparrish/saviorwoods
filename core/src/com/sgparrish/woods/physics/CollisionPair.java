@@ -46,10 +46,6 @@ public class CollisionPair implements Comparable<CollisionPair> {
 
     private float getCollisionTime(float timeRemaining) {
 
-        if (minkowskiShape.contains(0, 0)) {
-            System.out.println("ruh roh!");
-        }
-
         // This method does the actual minkowski collision check
         float minT = Float.MAX_VALUE;
         float t, x, y;
@@ -57,12 +53,28 @@ public class CollisionPair implements Comparable<CollisionPair> {
         float right = minkowskiShape.x + minkowskiShape.width;
         float top = minkowskiShape.y + minkowskiShape.height;
         float bottom = minkowskiShape.y;
+
+        if (minkowskiShape.contains(0, 0) && left != 0 && right != 0 && top != 0 && bottom != 0) {
+            System.out.println("ruh roh!");
+        }
+
         timeRemaining += GAMMA;
         normal = new Vector2();
         // Test against left edge
         t = left / minkowskiVelocity.x; // Get the collisionTime that velocity would reach the left edge
         if (t >= ZERO && t <= timeRemaining) { // if that collisionTime within [0, timeRemaining] (aka during this collisionTime step)
+            x = t * minkowskiVelocity.x;
             y = t * minkowskiVelocity.y; // calculate the y value for that collisionTime
+            while((x > left && x < right) && minkowskiVelocity.x != 0 && t != 0) {
+                t = Math.max(0, t - GAMMA);
+                x = t * minkowskiVelocity.x;
+                y = t * minkowskiVelocity.y;
+            }
+            while((y > bottom && y < top) && minkowskiVelocity.y != 0 && t != 0) {
+                t = Math.max(0, t - GAMMA);
+                x = t * minkowskiVelocity.x;
+                y = t * minkowskiVelocity.y;
+            }
             if (y >= bottom && y <= top && t <= minT) { // if that y value is on the edge, and this is the smallest t yet
                 minT = t;
                 normal.x += 1;
@@ -71,7 +83,18 @@ public class CollisionPair implements Comparable<CollisionPair> {
         // Test against right edge
         t = right / minkowskiVelocity.x; // Get the collisionTime that velocity would reach the right edge
         if (t >= ZERO && t <= timeRemaining) { // if that collisionTime within [0, timeRemaining] (aka during this collisionTime step)
+            x = t * minkowskiVelocity.x;
             y = t * minkowskiVelocity.y; // calculate the y value for that collisionTime
+            while((x > left && x < right) && minkowskiVelocity.x != 0 && t != 0) {
+                t = Math.max(0, t - GAMMA);
+                x = t * minkowskiVelocity.x;
+                y = t * minkowskiVelocity.y;
+            }
+            while((y > bottom && y < top) && minkowskiVelocity.y != 0 && t != 0) {
+                t = Math.max(0, t - GAMMA);
+                x = t * minkowskiVelocity.x;
+                y = t * minkowskiVelocity.y;
+            }
             if (y >= bottom && y <= top && t <= minT) { // if that y value is on the edge, and this is the smallest t yet
                 minT = t;
                 normal.x -= 1;
@@ -81,6 +104,17 @@ public class CollisionPair implements Comparable<CollisionPair> {
         t = top / minkowskiVelocity.y; // Get the collisionTime that velocity would reach the top edge
         if (t >= ZERO && t <= timeRemaining) { // if that collisionTime within [0, timeRemaining] (aka during this collisionTime step)
             x = t * minkowskiVelocity.x; // calculate the x value for that collisionTime
+            y = t * minkowskiVelocity.y;
+            while((x > left && x < right) && minkowskiVelocity.x != 0 && t != 0) {
+                t = Math.max(0, t - GAMMA);
+                x = t * minkowskiVelocity.x;
+                y = t * minkowskiVelocity.y;
+            }
+            while((y > bottom && y < top) && minkowskiVelocity.y != 0 && t != 0) {
+                t = Math.max(0, t - GAMMA);
+                x = t * minkowskiVelocity.x;
+                y = t * minkowskiVelocity.y;
+            }
             if (x >= left && x <= right && t <= minT) { // if that x value is on the edge, and this is the smallest t yet
                 minT = t;
                 normal.y -= 1;
@@ -90,6 +124,17 @@ public class CollisionPair implements Comparable<CollisionPair> {
         t = bottom / minkowskiVelocity.y; // Get the collisionTime that velocity would reach the bottom edge
         if (t >= ZERO && t <= timeRemaining) { // if that collisionTime within [0, timeRemaining] (aka during this collisionTime step)
             x = t * minkowskiVelocity.x; // calculate the x value for that collisionTime
+            y = t * minkowskiVelocity.y;
+            while((x > left && x < right) && minkowskiVelocity.x != 0 && t != 0) {
+                t = Math.max(0, t - GAMMA);
+                x = t * minkowskiVelocity.x;
+                y = t * minkowskiVelocity.y;
+            }
+            while((y > bottom && y < top) && minkowskiVelocity.y != 0 && t != 0) {
+                t = Math.max(0, t - GAMMA);
+                x = t * minkowskiVelocity.x;
+                y = t * minkowskiVelocity.y;
+            }
             if (x >= left && x <= right && t <= minT) { // if that x value is on the edge, and this is the smallest t yet
                 minT = t;
                 normal.y += 1;

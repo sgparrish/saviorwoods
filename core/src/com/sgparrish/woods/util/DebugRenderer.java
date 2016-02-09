@@ -3,10 +3,7 @@ package com.sgparrish.woods.util;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.sgparrish.woods.entity.Coordinate;
-import com.sgparrish.woods.entity.Player;
-import com.sgparrish.woods.entity.TileEntity;
-import com.sgparrish.woods.entity.World;
+import com.sgparrish.woods.entity.*;
 
 public class DebugRenderer {
 
@@ -18,6 +15,8 @@ public class DebugRenderer {
 
     private static final Color TILE_COLOR = Color.YELLOW;
     private static final Color PLAYER_COLOR = Color.RED;
+    private static final Color PLAYER_TILE_COLOR = Color.BLUE;
+
     private final ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
 
@@ -31,17 +30,28 @@ public class DebugRenderer {
         shapeRenderer.setProjectionMatrix(camera.combined);
     }
 
-    public void renderPlayer(Player player) {
+    public void renderPhysicsEntity(PhysicsEntity physicsEntity) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.rect(
-                player.position.x,
-                player.position.y,
+                physicsEntity.position.x,
+                physicsEntity.position.y,
                 1,
                 1,
                 PLAYER_COLOR,
                 PLAYER_COLOR,
                 PLAYER_COLOR,
                 PLAYER_COLOR);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.rect(
+                (int) physicsEntity.position.x,
+                (int) physicsEntity.position.y,
+                1,
+                1,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR);
         shapeRenderer.end();
     }
 

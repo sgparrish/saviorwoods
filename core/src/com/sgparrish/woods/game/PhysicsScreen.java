@@ -21,9 +21,9 @@ public class PhysicsScreen implements Screen {
             }
         });
         //player.position.set(0.9122961f, 1.0287564f);
-        player.position.set(1, 1);
+        player.position.set(2, 2);
         player.dimension.set(0.95f, 0.95f);
-        player.velocity.set(-5, -5);
+        player.velocity.set(0, 0);
         player.properties.elasticity = 0.2f;
         player.properties.friction = 0.2f;
         world.addCollidable(player);
@@ -91,18 +91,18 @@ public class PhysicsScreen implements Screen {
     @Override
     public void render(float delta) {
 
-        float vel = 5;
+        float vel = 0.05f;
         if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
-            player.velocity.x = -vel;
+            player.velocity.x -= vel;
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {
-            player.velocity.x = vel;
+            player.velocity.x += vel;
         } else {
             // player.velocity.x = 0;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)) {
-            player.velocity.y = vel;
+            player.velocity.y += vel;
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)) {
-            player.velocity.y = -vel;
+            player.velocity.y -= vel;
         } else {
             // player.velocity.y = 0;
         }

@@ -30,8 +30,12 @@ public class Collidable {
     public CollisionListener listener;
 
     public void applyVelocity(float t, float delta) {
+        float xReduction = Math.min(0.001f, Math.abs(velocity.x) * delta * t * 0.01f);
+        float yReduction = Math.min(0.001f, Math.abs(velocity.y) * delta * t * 0.01f);
+        xReduction = (velocity.x > 0 ? -xReduction : xReduction);
+        yReduction = (velocity.y > 0 ? -yReduction : yReduction);
         if (velocity.x != 0.0f || velocity.y != 0.0f) {
-            position.add(velocity.x * t * delta, velocity.y * t * delta);
+            position.add((velocity.x * t * delta) + xReduction, (velocity.y * t * delta) + yReduction);
         }
     }
 

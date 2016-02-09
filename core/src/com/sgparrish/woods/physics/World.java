@@ -28,15 +28,15 @@ public class World {
 
         accumulator.accumulate(delta);
 
-        while (accumulator.next()) {
+        //while (accumulator.next()) {
 
             collisionData.clear();
             collisionPairs.clear();
 
-            generateCollisionData(TIME_STEP);
-            initialCollisionCheck(TIME_STEP);
-            collisionIteration(TIME_STEP);
-        }
+            generateCollisionData(delta);
+            initialCollisionCheck(delta);
+            collisionIteration(delta);
+       // }
     }
 
     public void addCollidable(Collidable collidable) {
@@ -88,11 +88,34 @@ public class World {
         // Simulate everything up to this collision time
         applyVelocities(collisionPair.collisionTime - lastCollisionTime, delta);
 
+        // Create Vectors for new velocities
+        Vector2 forceA, forceB;
+
         // Notify both collidable objects of the collision
-        collisionPair.datumA.collidable.collision(collisionPair.datumB.collidable,
+        forceA = collisionPair.datumA.collidable.collision(collisionPair.datumB.collidable,
                 new Vector2(collisionPair.normal).scl(-1), contact);
-        collisionPair.datumB.collidable.collision(collisionPair.datumA.collidable,
+        forceB = collisionPair.datumB.collidable.collision(collisionPair.datumA.collidable,
                 new Vector2(collisionPair.normal), contact);
+
+        // Call any collision listeners
+        if (collisionPair.datumA.collidable.listener != null) {
+            collisionPair.datumA.collidable.listener.collision(collisionPair.datumB.collidable,
+                    new Vector2(forceA).scl(-1),
+                    new Vector2(collisionPair.normal).scl(-1), contact);
+        }
+        if (collisionPair.datumB.collidable.listener != null) {
+            collisionPair.datumB.collidable.listener.collision(collisionPair.datumA.collidable,
+                    new Vector2(forceB).scl(-1),
+                    new Vector2(collisionPair.normal), contact);
+        }
+
+        // Apply forces
+        if (forceA != null) {
+            collisionPair.datumA.collidable.applyForce(forceA);
+        }
+        if (forceB != null) {
+            collisionPair.datumB.collidable.applyForce(forceB);
+        }
 
         // Render this contact...
         if (debugRenderer != null) debugRenderer.renderContact(contact);

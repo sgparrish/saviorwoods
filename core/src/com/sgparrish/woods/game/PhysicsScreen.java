@@ -16,7 +16,7 @@ public class PhysicsScreen implements Screen {
         world.debugRenderer = new DebugRenderer();
         player = new Collidable(new CollisionListener() {
             @Override
-            public void collision(Collidable other, Vector2 normal, Contact contact) {
+            public void collision(Collidable other, Vector2 force, Vector2 normal, Contact contact) {
                 world.debugRenderer.renderNormal(normal, contact);
             }
         });
@@ -24,8 +24,9 @@ public class PhysicsScreen implements Screen {
         player.position.set(2, 2);
         player.dimension.set(0.95f, 0.95f);
         player.velocity.set(0, 0);
-        player.properties.elasticity = 1.0f;
-        player.properties.friction = 0.1f;
+        player.properties.mass = 1.0f;
+        player.properties.elasticity = 0.0f;
+        player.properties.friction = 0.0f;
         world.addCollidable(player);
 
         int xmin = 0;

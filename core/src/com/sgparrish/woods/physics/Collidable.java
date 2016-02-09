@@ -33,6 +33,10 @@ public class Collidable {
         }
     }
 
+    public void applyForce(Vector2 force) {
+        velocity.add(new Vector2(force).scl(1.0f / properties.mass));
+    }
+
     public Rectangle getRectangle() {
         return new Rectangle(position.x, position.y, dimension.x, dimension.y);
     }
@@ -48,14 +52,12 @@ public class Collidable {
         return rectangle.merge(velRect);
     }
 
-    public void collision(Collidable other, Vector2 normal, Contact contact) {
+    public Vector2 collision(Collidable other, Vector2 normal, Contact contact) {
         if (solid && other.solid && active && other.solid && properties.mass > 0) {
             if (other.properties.mass > 0) {
-                // Add up total momentum
-                Vector2 momentum = new Vector2(velocity).scl(properties.mass);
-                momentum.add(new Vector2(other.velocity).scl(other.properties.mass));
 
-                float massPortion = properties.mass / (properties.mass + other.properties.mass);
+                // Add up total momentum
+                Vector2 momentum = new Vector2(other.velocity).scl(other.properties.mass);
 
                 Vector2 orthogonalToNormal = new Vector2(normal).rotate90(1);
 
@@ -65,16 +67,12 @@ public class Collidable {
                 normalComponent *= properties.getElasticity(other.properties);
                 orthoComponent *= properties.getFriction(other.properties);
 
-                normalComponent *= massPortion;
-                orthoComponent *= massPortion;
-
-                Vector2 newVel = new Vector2(
+                Vector2 newVelocity = new Vector2(
                         normal.x * normalComponent + orthogonalToNormal.x * orthoComponent,
                         normal.y * normalComponent + orthogonalToNormal.y * orthoComponent
                 );
 
-                newVel.sub(velocity);
-                velocity.add(newVel);
+                return newVelocity.sub(velocity).scl(properties.mass);
 
 
             } else {
@@ -86,11 +84,14 @@ public class Collidable {
                 normalComponent *= properties.getElasticity(other.properties);
                 orthoComponent *= properties.getFriction(other.properties);
 
-                velocity.set(
+                Vector2 newVelocity = new Vector2(
                         normal.x * normalComponent + orthogonalToNormal.x * orthoComponent,
                         normal.y * normalComponent + orthogonalToNormal.y * orthoComponent
                 );
+
+                return newVelocity.sub(velocity).scl(properties.mass);
             }
         }
+        return null;
     }
 }

@@ -25,7 +25,7 @@ public class PlayerEntity extends PhysicsSpriteEntity {
     }
 
     @Override
-    public void collision(Collidable other, Vector2 normal, Contact contact) {
+    public void collision(Collidable other, Vector2 force, Vector2 normal, Contact contact) {
 
     }
 }

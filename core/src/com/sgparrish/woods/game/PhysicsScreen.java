@@ -24,8 +24,8 @@ public class PhysicsScreen implements Screen {
         player.position.set(2, 2);
         player.dimension.set(0.95f, 0.95f);
         player.velocity.set(0, 0);
-        player.properties.elasticity = 0.2f;
-        player.properties.friction = 0.2f;
+        player.properties.elasticity = 1.0f;
+        player.properties.friction = 0.1f;
         world.addCollidable(player);
 
         int xmin = 0;
@@ -37,38 +37,46 @@ public class PhysicsScreen implements Screen {
             Collidable body = new Collidable();
             body.position.set(xmin, ymin);
             body.dimension.set(xmax - xmin, 1);
+            body.properties.mass = 0;
             world.addCollidable(body);
             body = new Collidable();
             body.position.set(xmin, ymax);
             body.dimension.set(xmax - xmin, 1);
+            body.properties.mass = 0;
             world.addCollidable(body);
             body = new Collidable();
             body.position.set(xmin, ymin + 1);
             body.dimension.set(1, ymax - ymin - 1);
+            body.properties.mass = 0;
             world.addCollidable(body);
             body = new Collidable();
             body.position.set(xmax - 1, ymin + 1);
             body.dimension.set(1, ymax - ymin - 1);
+            body.properties.mass = 0;
             world.addCollidable(body);
         } else {
             for (int x = xmin; x < xmax; x++) {
                 Collidable body = new Collidable();
                 body.position.set(x, ymin);
                 body.dimension.set(1, 1);
+                body.properties.mass = 0;
                 world.addCollidable(body);
                 body = new Collidable();
                 body.position.set(x, ymax);
                 body.dimension.set(1, 1);
+                body.properties.mass = 0;
                 world.addCollidable(body);
             }
             for (int y = ymin + 1; y < ymax; y++) {
                 Collidable body = new Collidable();
                 body.position.set(xmin, y);
                 body.dimension.set(1, 1);
+                body.properties.mass = 0;
                 world.addCollidable(body);
                 body = new Collidable();
                 body.position.set(xmax - 1, y);
                 body.dimension.set(1, 1);
+                body.properties.mass = 0;
                 world.addCollidable(body);
             }
 

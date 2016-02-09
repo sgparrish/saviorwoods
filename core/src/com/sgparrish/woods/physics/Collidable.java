@@ -5,8 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Collidable {
 
-    public static int collisions = 0;
-
     public Collidable() {
         this(null);
     }
@@ -51,27 +49,48 @@ public class Collidable {
     }
 
     public void collision(Collidable other, Vector2 normal, Contact contact) {
+        if (solid && other.solid && active && other.solid && properties.mass > 0) {
+            if (other.properties.mass > 0) {
+                // Add up total momentum
+                Vector2 momentum = new Vector2(velocity).scl(properties.mass);
+                momentum.add(new Vector2(other.velocity).scl(other.properties.mass));
 
-        if (listener != null) {
-            listener.collision(other, normal, contact);
-            collisions += 1;
-            //System.out.println("collision " + collisions);
-        }
+                float massPortion = properties.mass / (properties.mass + other.properties.mass);
 
-        if (solid && other.solid) {
-            // Remove velocity component in direction that collision occurred
-            Vector2 orthogonalToNormal = new Vector2(normal).rotate90(1);
+                Vector2 orthogonalToNormal = new Vector2(normal).rotate90(1);
 
-            float normalComponent = Math.abs(velocity.dot(normal));
-            float orthoComponent = velocity.dot(orthogonalToNormal);
+                float normalComponent = Math.abs(momentum.dot(normal));
+                float orthoComponent = momentum.dot(orthogonalToNormal);
 
-            normalComponent *= properties.getElasticity(other.properties);
-            orthoComponent *= properties.getFriction(other.properties);
+                normalComponent *= properties.getElasticity(other.properties);
+                orthoComponent *= properties.getFriction(other.properties);
 
-            velocity.set(
-                    normal.x * normalComponent + orthogonalToNormal.x * orthoComponent,
-                    normal.y * normalComponent + orthogonalToNormal.y * orthoComponent
-            );
+                normalComponent *= massPortion;
+                orthoComponent *= massPortion;
+
+                Vector2 newVel = new Vector2(
+                        normal.x * normalComponent + orthogonalToNormal.x * orthoComponent,
+                        normal.y * normalComponent + orthogonalToNormal.y * orthoComponent
+                );
+
+                newVel.sub(velocity);
+                velocity.add(newVel);
+
+
+            } else {
+                Vector2 orthogonalToNormal = new Vector2(normal).rotate90(1);
+
+                float normalComponent = Math.abs(velocity.dot(normal));
+                float orthoComponent = velocity.dot(orthogonalToNormal);
+
+                normalComponent *= properties.getElasticity(other.properties);
+                orthoComponent *= properties.getFriction(other.properties);
+
+                velocity.set(
+                        normal.x * normalComponent + orthogonalToNormal.x * orthoComponent,
+                        normal.y * normalComponent + orthogonalToNormal.y * orthoComponent
+                );
+            }
         }
     }
 }

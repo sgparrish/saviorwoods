@@ -11,12 +11,14 @@ public abstract class PhysicsEntity implements Entity {
     private final static float HALF_WIDTH = WIDTH / 2.0f;
     private final static float HALF_HEIGHT = HEIGHT / 2.0f;
 
+    public boolean onGround;
     public final Vector2 position;
     public final Vector2 velocity;
     public World world;
 
 
     public PhysicsEntity() {
+        onGround = false;
         velocity = new Vector2();
         position = new Vector2();
     }
@@ -43,19 +45,10 @@ public abstract class PhysicsEntity implements Entity {
 
     @Override
     public void update(float delta) {
-
-        velocity.y -= 0.0001f;
-
-        position.add(velocity);
-
-        if (world.getTileFromVector(getBottom()) != null) {
-            position.y = (int) (position.y + 1);
-            velocity.y = 0;
-        }
     }
 
     @Override
     public void render() {
-        DebugRenderer.getInstance().renderPhysicsEntity(this);
+        DebugRenderer.getInstance().renderPhysicsEntity(this, world);
     }
 }

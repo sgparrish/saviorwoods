@@ -17,7 +17,7 @@ public class Player extends PhysicsEntity {
     @Override
     public void update(float delta) {
 
-        float vel = 0.005f;
+        float vel = 0.05f;
         if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
             velocity.x -= vel;
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {

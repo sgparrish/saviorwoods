@@ -3,7 +3,10 @@ package com.sgparrish.woods.util;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.sgparrish.woods.entity.*;
+import com.badlogic.gdx.math.Vector2;
+import com.sgparrish.woods.entity.Coordinates;
+import com.sgparrish.woods.entity.PhysicsEntity;
+import com.sgparrish.woods.entity.World;
 
 public class DebugRenderer {
 
@@ -31,21 +34,81 @@ public class DebugRenderer {
     }
 
     public void renderPhysicsEntity(PhysicsEntity physicsEntity) {
+        Vector2 left = physicsEntity.getLeft();
+        Vector2 right = physicsEntity.getRight();
+        Vector2 top = physicsEntity.getTop();
+        Vector2 bottom = physicsEntity.getBottom();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.rect(
-                physicsEntity.position.x,
-                physicsEntity.position.y,
-                1,
-                1,
+        shapeRenderer.line(
+                bottom.x,
+                bottom.y,
+                right.x,
+                right.y,
                 PLAYER_COLOR,
+                PLAYER_COLOR
+        );
+        shapeRenderer.line(
+                right.x,
+                right.y,
+                top.x,
+                top.y,
                 PLAYER_COLOR,
+                PLAYER_COLOR
+        );
+        shapeRenderer.line(
+                top.x,
+                top.y,
+                left.x,
+                left.y,
                 PLAYER_COLOR,
-                PLAYER_COLOR);
+                PLAYER_COLOR
+        );
+        shapeRenderer.line(
+                left.x,
+                left.y,
+                bottom.x,
+                bottom.y,
+                PLAYER_COLOR,
+                PLAYER_COLOR
+        );
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.rect(
-                (int) physicsEntity.position.x,
-                (int) physicsEntity.position.y,
+                (int) physicsEntity.getBottom().x,
+                (int) physicsEntity.getBottom().y,
+                1,
+                1,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.rect(
+                (int) physicsEntity.getTop().x,
+                (int) physicsEntity.getTop().y,
+                1,
+                1,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.rect(
+                (int) physicsEntity.getLeft().x,
+                (int) physicsEntity.getLeft().y,
+                1,
+                1,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR,
+                PLAYER_TILE_COLOR);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.rect(
+                (int) physicsEntity.getRight().x,
+                (int) physicsEntity.getRight().y,
                 1,
                 1,
                 PLAYER_TILE_COLOR,
@@ -56,7 +119,7 @@ public class DebugRenderer {
     }
 
     public void renderWorld(World world) {
-        for(Coordinate c : world.worldMap.keySet()) {
+        for(Coordinates c : world.worldMap.keySet()) {
             renderTile(c.x, c.y);
         }
     }

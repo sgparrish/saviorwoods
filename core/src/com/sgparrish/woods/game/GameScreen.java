@@ -17,9 +17,9 @@ public class GameScreen implements Screen {
         Player player = new Player();
         World world = new World();
         for(int i = 0; i < 20; i++) {
-            world.worldMap.put(new Coordinate(i, 0), new TileEntity());
+            world.worldMap.put(new Coordinates(i, 0), new TileEntity());
         }
-        world.worldMap.put(new Coordinate(5, 1), new TileEntity());
+        world.worldMap.put(new Coordinates(5, 1), new TileEntity());
 
         player.world = world;
         player.position.set(1,1);

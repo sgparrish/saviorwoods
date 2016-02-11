@@ -10,10 +10,13 @@ import java.util.List;
 
 public class World implements Entity {
 
+    public Vector2 gravity;
+
     public List<PhysicsEntity> physicsEntities;
     public BiMap<Coordinates, TileEntity> worldMap;
 
     public World() {
+        gravity = new Vector2(0, -0.05f);
         physicsEntities = new ArrayList<PhysicsEntity>();
         worldMap = HashBiMap.create();
     }
@@ -39,61 +42,47 @@ public class World implements Entity {
 
         // Update all physics entities
         for (PhysicsEntity entity : physicsEntities) {
-            // Keep a copy of position
-            Vector2 previousPosition = new Vector2(entity.position);
+
+            entity.canJump = false;
 
             // Move all physics entities
             entity.position.add(new Vector2(entity.velocity).scl(delta));
 
-            // Get below
-            Coordinates below = getCoordsFromVector(new Vector2(entity.position).add(0, -0.01f));
-            if (entity.velocity.y < 0 && worldMap.get(below) != null) {
-                entity.onGround = true;
-                entity.position.y = below.y + 1;
-                entity.velocity.y = Math.max(entity.velocity.y, 0);
-            } else if (worldMap.get(below) == null) {
-                entity.onGround = false;
-            }
+            // Collide entities with world
+            resolveCollision(entity);
 
-            // Get top
-            Coordinates top = getCoordsFromVector(new Vector2(entity.position).add(0, 1.01f));
-            if (entity.velocity.y > 0 && worldMap.get(top) != null) {
-                entity.position.y = top.y;
-                entity.velocity.y = Math.min(entity.velocity.y, 0);
-            }
+            entity.velocity.add(gravity);
+        }
+    }
 
-            // Get left
-            Coordinates left = getCoordsFromVector(new Vector2(entity.position).add(-0.5f, 0.51f));
-            if (entity.velocity.x < 0 && worldMap.get(left) != null) {
-                entity.position.x = left.x + 1.5f;
-                entity.velocity.x = Math.max(entity.velocity.x, 0);
-            }
+    private void resolveCollision(PhysicsEntity entity) {
+        // First check collision points
+        for (CollisionPoint point : entity.collisionShape.collisionPoints) {
+            // Going correct direction?
+            if (point.hasIntoNormalComponent(entity.velocity)) {
+                // Check if point is inside a tile
+                Vector2 vertex = point.getPosition(entity.position);
+                Coordinates pointCoords = getCoordsFromVector(vertex);
+                if (worldMap.get(pointCoords) != null) {
+                    // Possible collision, time to project to normal, and test axis
+                    float entityProj = point.getMaxProjection(entity.position, entity.collisionShape.points);
+                    float tileProj = point.getMinProjection(
+                            new Vector2(pointCoords.x, pointCoords.y),
+                            new Vector2[]{
+                                    new Vector2(0, 0),
+                                    new Vector2(0, 1),
+                                    new Vector2(1, 0),
+                                    new Vector2(1, 1)});
 
-            // Get right
-            Coordinates right = getCoordsFromVector(new Vector2(entity.position).add(0.5f, 0.51f));
-            if (entity.velocity.x > 0 && worldMap.get(right) != null) {
-                entity.position.x = right.x - 0.5f;
-                entity.velocity.x = Math.min(entity.velocity.x, 0);
-            }
-
-            // Get below right
-            Coordinates belowRight = getCoordsFromVector(new Vector2(entity.position).add(0.49f, 0.01f));
-            if (worldMap.get(belowRight) != null) {
-                // project to 45 deg axis
-                Vector2 axis = (new Vector2(-1, 1)).nor();
-                float entityProj = Math.abs(axis.dot(entity.position));
-                float tileProj = Math.abs(axis.dot(new Vector2(belowRight.x, belowRight.y + 1)));
-                float velProj = Math.abs(axis.dot(entity.velocity));
-
-                if (entityProj > tileProj) {
-                    entity.position.add((new Vector2(axis)).scl(entityProj - tileProj));
-                    entity.velocity.add((new Vector2(axis)).scl(velProj));
-
+                    if (entityProj > tileProj) {
+                        entity.position.add(point.getScaledNormal(tileProj - entityProj));
+                        point.removeIntoNormalComponent(entity.velocity);
+                        if (point.normal.dot(gravity) > 0.0f) {
+                            entity.canJump = true;
+                        }
+                    }
                 }
             }
-
-            if (!entity.onGround)
-                entity.velocity.y -= 0.01f;
         }
     }
 

@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.sgparrish.woods.entity.*;
 
 public class DebugRenderer {
@@ -33,66 +32,29 @@ public class DebugRenderer {
         shapeRenderer.setProjectionMatrix(camera.combined);
     }
 
-    public void renderPhysicsEntity(PhysicsEntity physicsEntity, World world) {
-        Vector2 left = physicsEntity.getLeft();
-        Vector2 right = physicsEntity.getRight();
-        Vector2 top = physicsEntity.getTop();
-        Vector2 bottom = physicsEntity.getBottom();
+    public void renderPhysicsEntity(PhysicsEntity entity, World world) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.line(
-                bottom.x,
-                bottom.y,
-                right.x,
-                right.y,
-                PLAYER_COLOR,
-                PLAYER_COLOR
-        );
-        shapeRenderer.line(
-                right.x,
-                right.y,
-                top.x,
-                top.y,
-                PLAYER_COLOR,
-                PLAYER_COLOR
-        );
-        shapeRenderer.line(
-                top.x,
-                top.y,
-                left.x,
-                left.y,
-                PLAYER_COLOR,
-                PLAYER_COLOR
-        );
-        shapeRenderer.line(
-                left.x,
-                left.y,
-                bottom.x,
-                bottom.y,
-                PLAYER_COLOR,
-                PLAYER_COLOR
-        );
-        shapeRenderer.end();
-        Rectangle aabb = physicsEntity.getAABB();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.rect(
-                aabb.x,
-                aabb.y,
-                aabb.width,
-                aabb.height,
-                AABB_COLOR,
-                AABB_COLOR,
-                AABB_COLOR,
-                AABB_COLOR);
+        for (int i = 0; i < entity.collisionShape.points.length; i++) {
+            int j = (i + 1) % entity.collisionShape.points.length;
+            shapeRenderer.line(
+                    entity.collisionShape.points[i].x + entity.position.x,
+                    entity.collisionShape.points[i].y + entity.position.y,
+                    entity.collisionShape.points[j].x + entity.position.x,
+                    entity.collisionShape.points[j].y + entity.position.y,
+                    PLAYER_COLOR,
+                    PLAYER_COLOR
+            );
+        }
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.line(
-                physicsEntity.position.x,
-                physicsEntity.position.y,
-                physicsEntity.position.x + physicsEntity.velocity.x,
-                physicsEntity.position.y + physicsEntity.velocity.y,
+                entity.position.x,
+                entity.position.y,
+                entity.position.x + entity.velocity.x,
+                entity.position.y + entity.velocity.y,
                 PLAYER_COLOR,
                 PLAYER_COLOR
-                );
+        );
         shapeRenderer.end();
     }
 

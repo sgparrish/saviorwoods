@@ -11,36 +11,18 @@ public abstract class PhysicsEntity implements Entity {
     private final static float HALF_WIDTH = WIDTH / 2.0f;
     private final static float HALF_HEIGHT = HEIGHT / 2.0f;
 
-    public boolean onGround;
+    public boolean canJump;
     public final Vector2 position;
     public final Vector2 velocity;
+    public CollisionShape collisionShape;
     public World world;
 
 
     public PhysicsEntity() {
-        onGround = false;
+        canJump = false;
         velocity = new Vector2();
         position = new Vector2();
-    }
-
-    public Vector2 getLeft() {
-        return new Vector2(position).add(-HALF_WIDTH, HALF_HEIGHT);
-    }
-
-    public Vector2 getRight() {
-        return new Vector2(position).add(HALF_WIDTH, HALF_HEIGHT);
-    }
-
-    public Vector2 getTop() {
-        return new Vector2(position).add(0.0f, HEIGHT);
-    }
-
-    public Vector2 getBottom() {
-        return new Vector2(position);
-    }
-
-    public Rectangle getAABB() {
-        return new Rectangle(position.x - HALF_WIDTH, position.y, WIDTH, HEIGHT);
+        collisionShape = CollisionShape.createOctagon(WIDTH, HEIGHT);
     }
 
     @Override

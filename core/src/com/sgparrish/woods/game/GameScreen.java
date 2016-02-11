@@ -16,15 +16,28 @@ public class GameScreen implements Screen {
         entities = new ArrayList<Entity>();
         Player player = new Player();
         World world = new World();
-        for(int i = 0; i < 20; i++) {
-            world.worldMap.put(new Coordinates(i, 0), new TileEntity());
+        for (int x = 0; x < 20; x++) {
+            world.worldMap.put(new Coordinates(x, 0), new TileEntity());
+            world.worldMap.put(new Coordinates(x, 10), new TileEntity());
+        }
+        for (int y = 1; y < 10; y++) {
+            world.worldMap.put(new Coordinates(0, y), new TileEntity());
+            world.worldMap.put(new Coordinates(19, y), new TileEntity());
         }
         world.worldMap.put(new Coordinates(5, 1), new TileEntity());
+        world.worldMap.put(new Coordinates(5, 9), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 1), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 2), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 3), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 4), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 9), new TileEntity());
+        world.worldMap.put(new Coordinates(9, 1), new TileEntity());
+        world.worldMap.put(new Coordinates(9, 9), new TileEntity());
 
         world.physicsEntities.add(player);
 
         player.world = world;
-        player.position.set(1,1);
+        player.position.set(1.5f, 1);
         entities.add(player);
         entities.add(world);
 

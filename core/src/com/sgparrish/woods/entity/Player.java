@@ -25,8 +25,8 @@ public class Player extends PhysicsEntity {
         } else {
             // player.velocity.x = 0;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)) {
-            velocity.y += vel;
+        if (Gdx.input.isKeyPressed(Input.Keys.DPAD_UP) && canJump) {
+            velocity.y += 5.0f;
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)) {
             velocity.y -= vel;
         } else {

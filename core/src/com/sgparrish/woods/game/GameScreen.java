@@ -3,50 +3,41 @@ package com.sgparrish.woods.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.sgparrish.woods.entity.Entity;
-import com.sgparrish.woods.entity.brush.BrushEntity;
-import com.sgparrish.woods.entity.player.PlayerEntity;
-import com.sgparrish.woods.entity.tile.TileMapEntity;
+import com.sgparrish.woods.entity.*;
+import com.sgparrish.woods.util.DebugRenderer;
 
 import java.util.ArrayList;
 
 public class GameScreen implements Screen {
 
-    private PhysicsManager physics;
-
-    private Box2DDebugRenderer debugRenderer;
-
     private ArrayList<Entity> entities;
 
     public GameScreen() {
-
-        physics = PhysicsManager.getInstance();
-        physics.start();
-
-        // Physics Initialization
-        debugRenderer = new Box2DDebugRenderer();
-
         entities = new ArrayList<Entity>();
-        PlayerEntity player = new PlayerEntity();
+        Player player = new Player();
+        World world = new World();
+        for (int x = 0; x < 20; x++) {
+            world.worldMap.put(new Coordinates(x, 0), new TileEntity());
+            world.worldMap.put(new Coordinates(x, 10), new TileEntity());
+        }
+        for (int y = 1; y < 10; y++) {
+            world.worldMap.put(new Coordinates(0, y), new TileEntity());
+            world.worldMap.put(new Coordinates(19, y), new TileEntity());
+        }
+        world.worldMap.put(new Coordinates(5, 1), new TileEntity());
+        world.worldMap.put(new Coordinates(5, 9), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 1), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 2), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 3), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 4), new TileEntity());
+        world.worldMap.put(new Coordinates(7, 9), new TileEntity());
+        world.worldMap.put(new Coordinates(9, 1), new TileEntity());
+        world.worldMap.put(new Coordinates(9, 9), new TileEntity());
+
+        world.bodies.add(player.body);
+        player.body.position.set(1.5f, 1);
         entities.add(player);
-        TileMapEntity tme = new TileMapEntity();
-        entities.add(tme);
-
-        player.setTileMapEntity(tme);
-        tme.setPlayer(player);
-        tme.setBounds(0, 0, 1280, 720);
-        tme.addTile(7, 10);
-        tme.addTile(8, 10);
-        tme.addTile(9, 10);
-        tme.addTile(10, 10);
-        tme.addTile(9, 9);
-        tme.addTile(0, 9);
-        tme.addTile(9, 0);
-
-        entities.add(new BrushEntity());
+        entities.add(world);
 
     }
 
@@ -56,19 +47,16 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        physics.step(delta);
         for (Entity entity : entities) {
             entity.update(delta);
         }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        DebugRenderer.getInstance().start();
         for (Entity entity : entities) {
             entity.render();
         }
-
-        debugRenderer.render(physics.world, physics.camera.combined);
     }
 
     @Override

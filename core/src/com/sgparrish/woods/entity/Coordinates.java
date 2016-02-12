@@ -1,10 +1,10 @@
-package com.sgparrish.woods.entity.tile;
+package com.sgparrish.woods.entity;
 
-public class MapKey {
+public class Coordinates {
     public int x;
     public int y;
 
-    public MapKey(int x, int y) {
+    public Coordinates(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -14,9 +14,10 @@ public class MapKey {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MapKey mapKey = (MapKey) o;
+        Coordinates that = (Coordinates) o;
 
-        return x == mapKey.x && y == mapKey.y;
+        if (x != that.x) return false;
+        return y == that.y;
 
     }
 

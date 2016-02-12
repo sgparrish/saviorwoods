@@ -20,6 +20,18 @@ public class Player implements Entity, CollisionListener {
     }
 
     @Override
+    public void tileCollision(TileEntity tileEntity, Vector2 normal) {
+        if (normal.dot(new Vector2(0, -1)) > 0.0f) {
+            canJump = true;
+        }
+    }
+
+    @Override
+    public void bodyCollision(Body body, Vector2 normal) {
+
+    }
+
+    @Override
     public void render() {
         DebugRenderer.getInstance().renderBody(body);
     }
@@ -44,17 +56,5 @@ public class Player implements Entity, CollisionListener {
             // player.velocity.y = 0;
         }
         canJump = false;
-    }
-
-    @Override
-    public void tileCollision(TileEntity tileEntity, Vector2 normal) {
-        if (normal.dot(new Vector2(0, -1)) > 0.0f) {
-            canJump = true;
-        }
-    }
-
-    @Override
-    public void bodyCollision(Body body, Vector2 normal) {
-
     }
 }

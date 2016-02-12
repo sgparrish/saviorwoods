@@ -36,8 +36,8 @@ public class GameScreen implements Screen {
 
         world.bodies.add(player.body);
         player.body.position.set(1.5f, 1);
-        entities.add(player);
         entities.add(world);
+        entities.add(player);
 
     }
 

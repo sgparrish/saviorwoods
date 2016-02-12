@@ -1,6 +1,9 @@
-package com.sgparrish.woods.entity;
+package com.sgparrish.woods.physics;
 
 import com.badlogic.gdx.math.Vector2;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class CollisionPoint {
     public final Vector2 offset;
@@ -29,28 +32,36 @@ public class CollisionPoint {
 
     public void removeIntoNormalComponent(Vector2 vector) {
         float dot = vector.dot(normal);
-        if(dot > 0.0f) {
+        if (dot > 0.0f) {
             // Since normal is a unit vector,
             Vector2 normalComponent = new Vector2(normal).scl(-Math.abs(dot));
             vector.add(normalComponent);
         }
     }
 
-    public float getMinProjection(Vector2 position, Vector2[] vertices) {
+    public float getMinProjection(Vector2 position, List<Vector2> vertices) {
         float minProjection = Float.POSITIVE_INFINITY;
-        for (Vector2 vertex: vertices) {
+        for (Vector2 vertex : vertices) {
             Vector2 offsetVertex = new Vector2(vertex).add(position);
             minProjection = Math.min(minProjection, normal.dot(offsetVertex));
         }
         return minProjection;
     }
 
-    public float getMaxProjection(Vector2 position, Vector2[] vertices) {
+    public float getMinProjection(Vector2 position, Vector2[] vertices) {
+        return getMinProjection(position, Arrays.asList(vertices));
+    }
+
+    public float getMaxProjection(Vector2 position, List<Vector2> vertices) {
         float maxProjection = Float.NEGATIVE_INFINITY;
-        for (Vector2 vertex: vertices) {
+        for (Vector2 vertex : vertices) {
             Vector2 offsetVertex = new Vector2(vertex).add(position);
             maxProjection = Math.max(maxProjection, normal.dot(offsetVertex));
         }
         return maxProjection;
+    }
+
+    public float getMaxProjection(Vector2 position, Vector2[] vertices) {
+        return getMaxProjection(position, Arrays.asList(vertices));
     }
 }

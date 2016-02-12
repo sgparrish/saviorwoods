@@ -3,8 +3,11 @@ package com.sgparrish.woods.util;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
-import com.sgparrish.woods.entity.*;
+import com.badlogic.gdx.math.Vector2;
+import com.sgparrish.woods.entity.Coordinates;
+import com.sgparrish.woods.physics.Body;
+import com.sgparrish.woods.entity.World;
+import com.sgparrish.woods.physics.CollisionShape;
 
 public class DebugRenderer {
 
@@ -32,29 +35,35 @@ public class DebugRenderer {
         shapeRenderer.setProjectionMatrix(camera.combined);
     }
 
-    public void renderPhysicsEntity(PhysicsEntity entity, World world) {
+    public void renderBody(Body body) {
+        for(CollisionShape collisionShape : body.collisionShapes) {
+            renderShape(collisionShape, body.position);
+        }
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        for (int i = 0; i < entity.collisionShape.points.length; i++) {
-            int j = (i + 1) % entity.collisionShape.points.length;
+        shapeRenderer.line(
+                body.position.x,
+                body.position.y,
+                body.position.x + body.velocity.x,
+                body.position.y + body.velocity.y,
+                PLAYER_COLOR,
+                PLAYER_COLOR
+        );
+        shapeRenderer.end();
+    }
+
+    public void renderShape(CollisionShape shape, Vector2 position) {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        for (int i = 0; i < shape.points.length; i++) {
+            int j = (i + 1) % shape.points.length;
             shapeRenderer.line(
-                    entity.collisionShape.points[i].x + entity.position.x,
-                    entity.collisionShape.points[i].y + entity.position.y,
-                    entity.collisionShape.points[j].x + entity.position.x,
-                    entity.collisionShape.points[j].y + entity.position.y,
+                    shape.points[i].x + position.x,
+                    shape.points[i].y + position.y,
+                    shape.points[j].x + position.x,
+                    shape.points[j].y + position.y,
                     PLAYER_COLOR,
                     PLAYER_COLOR
             );
         }
-        shapeRenderer.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.line(
-                entity.position.x,
-                entity.position.y,
-                entity.position.x + entity.velocity.x,
-                entity.position.y + entity.velocity.y,
-                PLAYER_COLOR,
-                PLAYER_COLOR
-        );
         shapeRenderer.end();
     }
 

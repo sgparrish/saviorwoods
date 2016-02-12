@@ -1,4 +1,4 @@
-package com.sgparrish.woods.entity;
+package com.sgparrish.woods.physics;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -6,6 +6,8 @@ public class CollisionShape {
 
     // Aka how close two objects must be to "touch"
     public static final float SPACE_GAMMA = 0.01f;
+    public static final float WIDTH = 0.8f;
+    public static final float HEIGHT = 0.8f;
 
     public final Vector2[] points;
     public final CollisionPoint[] collisionPoints;
@@ -15,17 +17,14 @@ public class CollisionShape {
         this.collisionPoints = new CollisionPoint[numCollisionPoints];
     }
 
-    public static CollisionShape createDiamond(float width, float height) {
+    public static CollisionShape createDiamond(Vector2 masterOffset) {
         CollisionShape diamond = new CollisionShape(4, 8);
 
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
+        float halfWidth = WIDTH / 2.0f;
+        float halfHeight = HEIGHT / 2.0f;
 
         // This is used over hard coded indices so this can be rearranged
         int index = 0;
-
-        // Here in case I change where object's centers are - this makes it bottom middle
-        Vector2 masterOffset = new Vector2(0, 0);
 
         //    2
         //    /\ 1
@@ -35,7 +34,7 @@ public class CollisionShape {
         // Right 1
         diamond.points[index++] = new Vector2(halfWidth, halfHeight).add(masterOffset);
         // Top 2
-        diamond.points[index++] = new Vector2(0, height).add(masterOffset);
+        diamond.points[index++] = new Vector2(0, HEIGHT).add(masterOffset);
         // Left 3
         diamond.points[index++] = new Vector2(-halfWidth, halfHeight).add(masterOffset);
         // Bottom 4
@@ -55,7 +54,7 @@ public class CollisionShape {
         diamond.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(0, -1).nor());
 
         // Top
-        offset = new Vector2(0, height + SPACE_GAMMA).add(masterOffset);
+        offset = new Vector2(0, HEIGHT + SPACE_GAMMA).add(masterOffset);
         diamond.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(0, 1).nor());
 
         // Left
@@ -67,11 +66,11 @@ public class CollisionShape {
         diamond.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(1, 0).nor());
 
         // Top Right - diagonals are 'tucked in' by SPACE_GAMMA
-        offset = new Vector2(halfWidth - SPACE_GAMMA, height - SPACE_GAMMA).add(masterOffset);
+        offset = new Vector2(halfWidth - SPACE_GAMMA, HEIGHT - SPACE_GAMMA).add(masterOffset);
         diamond.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(1, 1).nor());
 
         // Top Left
-        offset = new Vector2(-halfWidth + SPACE_GAMMA, height - SPACE_GAMMA).add(masterOffset);
+        offset = new Vector2(-halfWidth + SPACE_GAMMA, HEIGHT - SPACE_GAMMA).add(masterOffset);
         diamond.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(-1, 1).nor());
 
         // Bottom Left
@@ -85,19 +84,16 @@ public class CollisionShape {
         return diamond;
     }
 
-    public static CollisionShape createOctagon(float width, float height) {
+    public static CollisionShape createOctagon(Vector2 masterOffset) {
         CollisionShape octagon = new CollisionShape(8, 12);
 
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        float quartWidth = width / 4.0f;
-        float quartHeight = height / 4.0f;
+        float halfWidth = WIDTH / 2.0f;
+        float halfHeight = HEIGHT / 2.0f;
+        float quartWidth = WIDTH / 4.0f;
+        float quartHeight = HEIGHT / 4.0f;
 
         // This is used over hard coded indices so this can be rearranged
         int index = 0;
-
-        // Here in case I change where object's centers are - this makes it bottom middle
-        Vector2 masterOffset = new Vector2(0, 0);
 
         //   3 _ 2
         //  4 / \  1
@@ -108,9 +104,9 @@ public class CollisionShape {
         // Right Top 1
         octagon.points[index++] = new Vector2(halfWidth, halfHeight + quartHeight).add(masterOffset);
         // Top Right 2
-        octagon.points[index++] = new Vector2(quartWidth, height).add(masterOffset);
+        octagon.points[index++] = new Vector2(quartWidth, HEIGHT).add(masterOffset);
         // Top Left 3
-        octagon.points[index++] = new Vector2(-quartWidth, height).add(masterOffset);
+        octagon.points[index++] = new Vector2(-quartWidth, HEIGHT).add(masterOffset);
         // Left Top 4
         octagon.points[index++] = new Vector2(-halfWidth, halfHeight + quartHeight).add(masterOffset);
         // Left Bottom 5
@@ -140,11 +136,11 @@ public class CollisionShape {
         octagon.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(0, -1).nor());
 
         // Top Right 3
-        offset = new Vector2(quartWidth, height + SPACE_GAMMA).add(masterOffset);
+        offset = new Vector2(quartWidth, HEIGHT + SPACE_GAMMA).add(masterOffset);
         octagon.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(0, 1).nor());
 
         // Top Left 4
-        offset = new Vector2(quartWidth, height + SPACE_GAMMA).add(masterOffset);
+        offset = new Vector2(quartWidth, HEIGHT + SPACE_GAMMA).add(masterOffset);
         octagon.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(0, 1).nor());
 
         // Left Top 5
@@ -164,11 +160,11 @@ public class CollisionShape {
         octagon.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(1, 0).nor());
 
         // Top Right Corner 9
-        offset = new Vector2(halfWidth - SPACE_GAMMA, height - SPACE_GAMMA).add(masterOffset);
+        offset = new Vector2(halfWidth - SPACE_GAMMA, HEIGHT - SPACE_GAMMA).add(masterOffset);
         octagon.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(1, 1).nor());
 
         // Top Left Corner 10
-        offset = new Vector2(-halfWidth + SPACE_GAMMA, height - SPACE_GAMMA).add(masterOffset);
+        offset = new Vector2(-halfWidth + SPACE_GAMMA, HEIGHT - SPACE_GAMMA).add(masterOffset);
         octagon.collisionPoints[index++] = new CollisionPoint(offset, new Vector2(-1, 1).nor());
 
         // Bottom Left Corner 11

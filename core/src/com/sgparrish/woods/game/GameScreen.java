@@ -34,10 +34,8 @@ public class GameScreen implements Screen {
         world.worldMap.put(new Coordinates(9, 1), new TileEntity());
         world.worldMap.put(new Coordinates(9, 9), new TileEntity());
 
-        world.physicsEntities.add(player);
-
-        player.world = world;
-        player.position.set(1.5f, 1);
+        world.bodies.add(player.body);
+        player.body.position.set(1.5f, 1);
         entities.add(player);
         entities.add(world);
 

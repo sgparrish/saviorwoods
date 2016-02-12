@@ -122,7 +122,8 @@ public class GameInput extends ControllerAdapter {
         DOWN,
 
         JUMP,
-        LIFT
+        LIFT,
+        DEBUG
     }
 
     public static void loadDefaultKeys() {
@@ -149,6 +150,9 @@ public class GameInput extends ControllerAdapter {
         // Lift
         keyMap.get(Commands.LIFT).add(Input.Keys.SHIFT_LEFT);
         keyMap.get(Commands.LIFT).add(Input.Keys.SHIFT_RIGHT);
+
+        // Debug
+        keyMap.get(Commands.DEBUG).add(Input.Keys.GRAVE);
     }
 
     public static void loadDefaultControllerInputs(Controller controller) {

@@ -10,11 +10,14 @@ import com.sgparrish.woods.physics.Polygon;
 import com.sgparrish.woods.physics.Range;
 import com.sgparrish.woods.physics.Shape;
 import com.sgparrish.woods.util.DebugRenderer;
+import com.sgparrish.woods.util.GameInput;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class World implements Entity {
+
+    public static final float GAMMA = 0.0005f;
 
     public Vector2 gravity;
 
@@ -60,28 +63,40 @@ public class World implements Entity {
     }
 
     private void resolveCollision(Body body) {
+
         for (Shape shape : getTileShapes(body.getAABB())) {
 
             float minPenetration = Float.POSITIVE_INFINITY;
             Vector2 minNormal = null;
 
             for (Vector2 normal : body.getNormals(shape)) {
-                Range bodyRange = body.projectOntoAxis(normal);
-                Range shapeRange = shape.projectOntoAxis(new Vector2(0,0), normal);
-                Range overlap = bodyRange.overlap(shapeRange);
-                if (overlap == null) {
-                    break;
-                } else {
-                    minNormal = normal;
-                    minPenetration = Math.min(minPenetration, overlap.getLength());
+                if (body.velocity.dot(normal) < 0) {
+                    Range bodyRange = body.projectOntoAxis(normal);
+                    Range shapeRange = shape.projectOntoAxis(new Vector2(0, 0), normal);
+                    Range overlap = bodyRange.overlap(shapeRange);
+                    if (overlap == null) {
+                        minNormal = null;
+                        break;
+                    } else if (minPenetration >= 0) {
+                        minNormal = normal;
+                        minPenetration = Math.min(minPenetration, overlap.getLength());
+                    }
+
                 }
+            }
+
+            if(GameInput.getCommandValue(GameInput.Commands.DEBUG) != 0) {
+                System.out.println("");
             }
 
             // Collision, so move out of shape and remove velocity into normal
             if (minNormal != null) {
-                body.position.add(new Vector2(minNormal).scl(minPenetration));
+
+                System.out.println(minNormal +" " + shape);
+
+                body.position.add(new Vector2(minNormal).scl(minPenetration + GAMMA));
                 float velocityDot = body.velocity.dot(minNormal);
-                if(velocityDot > 0) {
+                if (velocityDot < 0) {
                     body.velocity.add(new Vector2(minNormal).scl(Math.abs(velocityDot)));
                 }
             }
@@ -94,9 +109,9 @@ public class World implements Entity {
         GridPoint2 end = getPointFromVector(new Vector2(aabb.x + aabb.width, aabb.y + aabb.height));
         for (int x = start.x; x <= end.x; x++) {
             for (int y = start.y; y <= end.y; y++) {
-                if(worldMap.get(new GridPoint2(x, y)) != null) {
+                if (worldMap.get(new GridPoint2(x, y)) != null) {
                     Shape shape = Polygon.getSquare(1, 1);
-                    shape.translate(new Vector2(x, y));
+                    shape.translate(new Vector2(x + 0.5f, y + 0.5f));
                     shapes.add(shape);
                 }
             }

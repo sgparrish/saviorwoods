@@ -36,7 +36,7 @@ public class GameScreen implements Screen {
         world.worldMap.put(new GridPoint2(9, 9), new TileEntity());
 
         world.bodies.add(player.body);
-        player.body.position.set(2f, 2f);
+        player.body.position.set(2f, 3f);
         entities.add(world);
         entities.add(player);
 

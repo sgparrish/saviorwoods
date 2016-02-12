@@ -53,6 +53,6 @@ public class Player implements Entity, CollisionListener {
         } else {
             // player.velocity.y = 0;
         }
-        canJump = false;
+        canJump = true;
     }
 }

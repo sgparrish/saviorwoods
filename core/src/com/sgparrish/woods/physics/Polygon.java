@@ -74,4 +74,9 @@ public class Polygon implements Shape {
 
         return square;
     }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(points);
+    }
 }

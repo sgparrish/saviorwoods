@@ -3,7 +3,6 @@ package com.sgparrish.woods.entity;
 import com.badlogic.gdx.math.Vector2;
 import com.sgparrish.woods.physics.Body;
 import com.sgparrish.woods.physics.CollisionListener;
-import com.sgparrish.woods.physics.CollisionShape;
 import com.sgparrish.woods.util.DebugRenderer;
 import com.sgparrish.woods.util.GameInput;
 
@@ -15,7 +14,6 @@ public class Player implements Entity, CollisionListener {
     public Player() {
         canJump = false;
         body = new Body();
-        body.collisionShapes.add(CollisionShape.createOctagon(new Vector2(0, 0)));
         body.listener = this;
     }
 

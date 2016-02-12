@@ -5,9 +5,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.sgparrish.woods.physics.Body;
+import com.sgparrish.woods.physics.*;
 import com.sgparrish.woods.entity.World;
-import com.sgparrish.woods.physics.CollisionShape;
 
 public class DebugRenderer {
 
@@ -36,8 +35,10 @@ public class DebugRenderer {
     }
 
     public void renderBody(Body body) {
-        for(CollisionShape collisionShape : body.collisionShapes) {
-            renderShape(collisionShape, body.position);
+        for (Shape shape : body.shapes) {
+            if (shape instanceof Polygon) {
+                renderPolygon((Polygon) shape, body.position);
+            }
         }
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.line(
@@ -51,7 +52,7 @@ public class DebugRenderer {
         shapeRenderer.end();
     }
 
-    public void renderShape(CollisionShape shape, Vector2 position) {
+    public void renderPolygon(Polygon shape, Vector2 position) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         for (int i = 0; i < shape.points.length; i++) {
             int j = (i + 1) % shape.points.length;

@@ -3,6 +3,7 @@ package com.sgparrish.woods.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.GridPoint2;
 import com.sgparrish.woods.entity.*;
 import com.sgparrish.woods.util.DebugRenderer;
 
@@ -17,22 +18,22 @@ public class GameScreen implements Screen {
         Player player = new Player();
         World world = new World();
         for (int x = 0; x < 20; x++) {
-            world.worldMap.put(new Coordinates(x, 0), new TileEntity());
-            world.worldMap.put(new Coordinates(x, 10), new TileEntity());
+            world.worldMap.put(new GridPoint2(x, 0), new TileEntity());
+            world.worldMap.put(new GridPoint2(x, 10), new TileEntity());
         }
         for (int y = 1; y < 10; y++) {
-            world.worldMap.put(new Coordinates(0, y), new TileEntity());
-            world.worldMap.put(new Coordinates(19, y), new TileEntity());
+            world.worldMap.put(new GridPoint2(0, y), new TileEntity());
+            world.worldMap.put(new GridPoint2(19, y), new TileEntity());
         }
-        world.worldMap.put(new Coordinates(5, 1), new TileEntity());
-        world.worldMap.put(new Coordinates(5, 9), new TileEntity());
-        world.worldMap.put(new Coordinates(7, 1), new TileEntity());
-        world.worldMap.put(new Coordinates(7, 2), new TileEntity());
-        world.worldMap.put(new Coordinates(7, 3), new TileEntity());
-        world.worldMap.put(new Coordinates(7, 4), new TileEntity());
-        world.worldMap.put(new Coordinates(7, 9), new TileEntity());
-        world.worldMap.put(new Coordinates(9, 1), new TileEntity());
-        world.worldMap.put(new Coordinates(9, 9), new TileEntity());
+        world.worldMap.put(new GridPoint2(5, 1), new TileEntity());
+        world.worldMap.put(new GridPoint2(5, 9), new TileEntity());
+        world.worldMap.put(new GridPoint2(7, 1), new TileEntity());
+        world.worldMap.put(new GridPoint2(7, 2), new TileEntity());
+        world.worldMap.put(new GridPoint2(7, 3), new TileEntity());
+        world.worldMap.put(new GridPoint2(7, 4), new TileEntity());
+        world.worldMap.put(new GridPoint2(7, 9), new TileEntity());
+        world.worldMap.put(new GridPoint2(9, 1), new TileEntity());
+        world.worldMap.put(new GridPoint2(9, 9), new TileEntity());
 
         world.bodies.add(player.body);
         player.body.position.set(1.5f, 1);

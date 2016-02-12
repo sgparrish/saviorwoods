@@ -39,9 +39,9 @@ public class GameInput extends ControllerAdapter {
 
         loadDefaultKeys();
 
-        if (Controllers.getControllers().first() != null)
-            loadDefaultControllerInputs(Controllers.getControllers().first());
-        Controllers.addListener(new GameInput());
+        //if (Controllers.getControllers().first() != null)
+            //loadDefaultControllerInputs(Controllers.getControllers().first());
+        //Controllers.addListener(new GameInput());
     }
 
     // Float used over true/false because controllers use ranges

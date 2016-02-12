@@ -3,8 +3,8 @@ package com.sgparrish.woods.util;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.sgparrish.woods.entity.Coordinates;
 import com.sgparrish.woods.physics.Body;
 import com.sgparrish.woods.entity.World;
 import com.sgparrish.woods.physics.CollisionShape;
@@ -68,8 +68,8 @@ public class DebugRenderer {
     }
 
     public void renderWorld(World world) {
-        for (Coordinates c : world.worldMap.keySet()) {
-            renderTile(c.x, c.y, TILE_COLOR);
+        for (GridPoint2 gridPoint : world.worldMap.keySet()) {
+            renderTile(gridPoint.x, gridPoint.y, TILE_COLOR);
         }
     }
 

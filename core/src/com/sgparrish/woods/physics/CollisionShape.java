@@ -6,8 +6,8 @@ public class CollisionShape {
 
     // Aka how close two objects must be to "touch"
     public static final float SPACE_GAMMA = 0.01f;
-    public static final float WIDTH = 0.8f;
-    public static final float HEIGHT = 0.8f;
+    public static final float WIDTH = 1.0f;
+    public static final float HEIGHT = WIDTH;
 
     public final Vector2[] points;
     public final CollisionPoint[] collisionPoints;

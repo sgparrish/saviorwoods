@@ -9,6 +9,10 @@ import com.sgparrish.woods.util.GameInput;
 
 public class Player implements Entity, CollisionListener {
 
+    public static final float GROUND_ACCEL = 3.0f;
+    public static final float GROUND_DECEL = 6.0f;
+    public static final float AIR_ACCEL = 2.0f;
+
     public boolean canJump;
     public Body body;
 
@@ -39,19 +43,32 @@ public class Player implements Entity, CollisionListener {
     @Override
     public void update(float delta) {
 
-        float vel = 0.05f;
-        float value = 0.0f;
+        float value;
         if ((value = GameInput.getCommandValue(GameInput.Commands.LEFT)) != 0) {
-            body.velocity.x -= vel;
+            if (!canJump) {
+                body.velocity.x -= AIR_ACCEL * value * delta;
+            } else if (body.velocity.x > 0) {
+                body.velocity.x -= GROUND_DECEL * value * delta;
+                body.velocity.x = Math.max(0, body.velocity.x);
+            } else {
+                body.velocity.x -= GROUND_ACCEL * value * delta;
+            }
         } else if ((value = GameInput.getCommandValue(GameInput.Commands.RIGHT)) != 0) {
-            body.velocity.x += vel;
+            if (!canJump) {
+                body.velocity.x += AIR_ACCEL * value * delta;
+            } else if (body.velocity.x < 0) {
+                body.velocity.x += GROUND_DECEL * value * delta;
+                body.velocity.x = Math.min(0, body.velocity.x);
+            } else {
+                body.velocity.x += GROUND_ACCEL * value * delta;
+            }
         } else {
             // player.velocity.x = 0;
         }
         if (GameInput.getCommandValue(GameInput.Commands.JUMP) > 0 && canJump) {
             body.velocity.y += 5.0f;
         } else if ((value = GameInput.getCommandValue(GameInput.Commands.DOWN)) != 0) {
-            body.velocity.y -= vel;
+            //body.velocity.y -= vel * value;
         } else {
             // player.velocity.y = 0;
         }

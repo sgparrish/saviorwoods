@@ -16,7 +16,7 @@ public class GameInput extends ControllerAdapter {
     // Map Commands to keys, so game can query on commands, then the queries for
     // commands get turned into queries for keys in this singleton
     public static final Map<Commands, List<Integer>> keyMap = new HashMap<Commands, List<Integer>>();
-    private static final float DEADZONE = 0.1f;
+    private static final float DEAD_ZONE = 0.15f;
 
     // Controller maps
     public static Controller controller1;
@@ -39,9 +39,9 @@ public class GameInput extends ControllerAdapter {
 
         loadDefaultKeys();
 
-        //if (Controllers.getControllers().first() != null)
-            //loadDefaultControllerInputs(Controllers.getControllers().first());
-        //Controllers.addListener(new GameInput());
+        if (Controllers.getControllers().first() != null)
+            loadDefaultControllerInputs(Controllers.getControllers().first());
+        Controllers.addListener(new GameInput());
     }
 
     // Float used over true/false because controllers use ranges
@@ -65,9 +65,9 @@ public class GameInput extends ControllerAdapter {
         float bestValue = 0.0f;
         for (ControllerAxis axis : axisMap.get(command)) {
             float value = axis.controller.getAxis(axis.id);
-            if (value > 0.0f == axis.positive && Math.abs(value) > DEADZONE) {
+            if (value > 0.0f == axis.positive && Math.abs(value) > DEAD_ZONE) {
                 if (Math.abs(value) > Math.abs(bestValue) || firstValue) {
-                    bestValue = value;
+                    bestValue = Math.abs(value);
                     firstValue = false;
                 }
             }
